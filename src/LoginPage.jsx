@@ -11,13 +11,17 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Grid,
+  Card,
+  CardContent,
+  CardMedia,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import 'animate.css';
 
-// Lion-inspired, sunlit theme variables
-const accentColor = "#FFD700"; // Rich golden color
-const bgColor = "#FFF8DC";     // Cornsilk, a light warm yellow
+// Refined nature-inspired theme variables
+const accentColor = "#DAA520"; // Deeper gold for sophistication
+const bgColor = "#F5F5DC";     // Muted earthy beige
 const textColor = "#3E2723";   // Dark brown for contrast
 
 // Array of quotes for typewriter effect
@@ -32,30 +36,21 @@ const quotesArray = [
 const articles = [
   {
     id: 1,
-    title: "Protecting the Coral Reefs",
-    image:
-      "https://images.pexels.com/photos/158607/corals-reef-ocean-sea-158607.jpeg?auto=compress&cs=tinysrgb",
-    description:
-      "Marine conservation efforts are restoring coral reefs, vital to marine biodiversity. These ecosystems provide shelter, food, and breeding grounds for countless species.",
-    video: "https://www.w3schools.com/html/mov_bbb.mp4",
+    title: "The Last Stand of the Coral Reefs",
+    image: "https://images.pexels.com/photos/158607/corals-reef-ocean-sea-158607.jpeg?auto=compress&cs=tinysrgb",
+    description: "Marine conservationists fight to restore coral reefs, fragile ecosystems teeming with life, now fading under climate pressures.",
   },
   {
     id: 2,
-    title: "Deforestation Crisis",
-    image:
-      "https://images.pexels.com/photos/3408744/pexels-photo-3408744.jpeg?auto=compress&cs=tinysrgb",
-    description:
-      "Rapid deforestation is threatening wildlife habitats and accelerating climate change. Community-driven conservation programs aim to restore lost forests.",
-    video: null,
+    title: "The Silent Deforestation Crisis",
+    image: "https://images.pexels.com/photos/3408744/pexels-photo-3408744.jpeg?auto=compress&cs=tinysrgb",
+    description: "Forests vanish at alarming rates, displacing wildlife and warming our planet. Every tree lost is a story erased.",
   },
   {
     id: 3,
-    title: "Reforestation Efforts",
-    image:
-      "https://images.pexels.com/photos/33109/fantasy-forest-trees-mist.jpg?auto=compress&cs=tinysrgb",
-    description:
-      "Reforestation initiatives transform barren lands into thriving forests, reviving ecosystems and sequestering carbon.",
-    video: "https://www.w3schools.com/html/movie.mp4",
+    title: "A Rhino’s Tale of Survival",
+    image: "https://images.pexels.com/photos/33109/fantasy-forest-trees-mist.jpg?auto=compress&cs=tinysrgb",
+    description: "One rhino’s journey through a reforested sanctuary reflects hope amid the battle against poaching and habitat loss.",
   },
 ];
 
@@ -67,7 +62,7 @@ const LoginPage = ({ setUser }) => {
   // Sign Up form states
   const [signUpName, setSignUpName] = useState('');
   const [signUpUsername, setSignUpUsername] = useState('');
-  const [signUpTroop, setSignUpTroop] = useState('wildOgrapher'); // default selection
+  const [signUpTroop, setSignUpTroop] = useState('wildOgrapher');
   const [signUpEmail, setSignUpEmail] = useState('');
   const [signUpPassword, setSignUpPassword] = useState('');
   // Error message state
@@ -80,13 +75,12 @@ const LoginPage = ({ setUser }) => {
 
   const handleTabChange = (event, newValue) => {
     setTabIndex(newValue);
-    // Clear any previous errors when switching tabs
     setErrorMessage("");
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setErrorMessage(""); // Clear any existing error
+    setErrorMessage("");
     try {
       const response = await fetch('http://localhost:5174/api/auth/login', {
         method: 'POST',
@@ -98,9 +92,7 @@ const LoginPage = ({ setUser }) => {
         localStorage.setItem('token', data.token);
         setUser(data.user);
         localStorage.setItem('user', JSON.stringify(data.user));
-
       } else {
-        // Display error message from backend
         setErrorMessage(data.error);
       }
     } catch (error) {
@@ -116,18 +108,17 @@ const LoginPage = ({ setUser }) => {
       const response = await fetch('http://localhost:5174/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          name: signUpName, 
+        body: JSON.stringify({
+          name: signUpName,
           username: signUpUsername,
           troop: signUpTroop,
-          email: signUpEmail, 
-          password: signUpPassword, 
-          avatar: '' 
+          email: signUpEmail,
+          password: signUpPassword,
+          avatar: '',
         }),
       });
       const data = await response.json();
       if (response.ok) {
-        // Optionally, automatically log in the user after signup
         setUser(data.user);
         localStorage.setItem('user', JSON.stringify(data.user));
       } else {
@@ -168,9 +159,7 @@ const LoginPage = ({ setUser }) => {
         required
         value={loginEmail}
         onChange={(e) => setLoginEmail(e.target.value)}
-        InputProps={{
-          sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor },
-        }}
+        InputProps={{ sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor } }}
         InputLabelProps={{ sx: { color: textColor } }}
       />
       <TextField
@@ -182,9 +171,7 @@ const LoginPage = ({ setUser }) => {
         required
         value={loginPassword}
         onChange={(e) => setLoginPassword(e.target.value)}
-        InputProps={{
-          sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor },
-        }}
+        InputProps={{ sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor } }}
         InputLabelProps={{ sx: { color: textColor } }}
       />
       <Button
@@ -196,7 +183,6 @@ const LoginPage = ({ setUser }) => {
           backgroundColor: accentColor,
           color: textColor,
           fontWeight: 'bold',
-          boxShadow: `0 0 10px ${accentColor}`,
           '&:hover': { backgroundColor: "#FFC107" },
         }}
       >
@@ -220,20 +206,18 @@ const LoginPage = ({ setUser }) => {
         required
         value={signUpName}
         onChange={(e) => setSignUpName(e.target.value)}
-        InputProps={{
-          sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor },
-        }}
+        InputProps={{ sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor } }}
         InputLabelProps={{ sx: { color: textColor } }}
       />
-      {/* Dropdown for Troop Selection */}
       <FormControl fullWidth margin="normal" variant="outlined" required>
-        <InputLabel id="troop-select-label">Troop</InputLabel>
+        <InputLabel id="troop-select-label" sx={{ color: textColor }}>Troop</InputLabel>
         <Select
           labelId="troop-select-label"
           id="troop-select"
           value={signUpTroop}
           label="Troop"
           onChange={(e) => setSignUpTroop(e.target.value)}
+          sx={{ backgroundColor: "rgba(255,255,255,0.9)", color: textColor }}
         >
           <MenuItem value="wildOgrapher">WildOgrapher</MenuItem>
           <MenuItem value="naturalist">Naturalist</MenuItem>
@@ -247,9 +231,7 @@ const LoginPage = ({ setUser }) => {
         required
         value={signUpUsername}
         onChange={(e) => setSignUpUsername(e.target.value)}
-        InputProps={{
-          sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor },
-        }}
+        InputProps={{ sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor } }}
         InputLabelProps={{ sx: { color: textColor } }}
       />
       <TextField
@@ -260,9 +242,7 @@ const LoginPage = ({ setUser }) => {
         required
         value={signUpEmail}
         onChange={(e) => setSignUpEmail(e.target.value)}
-        InputProps={{
-          sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor },
-        }}
+        InputProps={{ sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor } }}
         InputLabelProps={{ sx: { color: textColor } }}
       />
       <TextField
@@ -274,9 +254,7 @@ const LoginPage = ({ setUser }) => {
         required
         value={signUpPassword}
         onChange={(e) => setSignUpPassword(e.target.value)}
-        InputProps={{
-          sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor },
-        }}
+        InputProps={{ sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor } }}
         InputLabelProps={{ sx: { color: textColor } }}
       />
       <Button
@@ -288,7 +266,6 @@ const LoginPage = ({ setUser }) => {
           backgroundColor: accentColor,
           color: textColor,
           fontWeight: 'bold',
-          boxShadow: `0 0 10px ${accentColor}`,
           '&:hover': { backgroundColor: "#FFC107" },
         }}
       >
@@ -303,64 +280,48 @@ const LoginPage = ({ setUser }) => {
   );
 
   return (
-    <Box sx={{ width: '100vw', overflowX: 'hidden' }}>
-      {/* Login/Sign Up Section with Scrolling Background Video */}
+    <Box sx={{ width: '100vw', overflowX: 'hidden', backgroundColor: bgColor }}>
+      {/* Hero Section with Background Image */}
       <Box
         sx={{
           position: 'relative',
           width: '100vw',
           minHeight: '100vh',
-          overflow: 'hidden',
-          backgroundColor: bgColor,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundImage: 'url(https://images.pexels.com/photos/47547/forest-trees-path-wilderness-47547.jpeg?auto=compress&cs=tinysrgb)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
         }}
       >
-        {/* Background Video */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            objectFit: 'cover',
-            zIndex: 0,
-            border: 'none',
-          }}
-        >
-          <source src="https://videos.pexels.com/video-files/18553643/18553643-sd_640_360_24fps.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-        {/* Light Overlay */}
+        {/* Overlay */}
         <Box
           sx={{
             position: 'absolute',
             top: 0,
             left: 0,
-            width: '100vw',
-            height: '100vh',
-            backgroundColor: 'rgba(255,255,255,0.3)',
-            zIndex: -2,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            zIndex: 1,
           }}
         />
         {/* Login/Sign Up Container */}
         <Box
           sx={{
             position: 'relative',
-            zIndex: 1,
+            zIndex: 2,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '100vw',
-            minHeight: '100vh',
-            px: 2,
+            width: '100%',
+            maxWidth: 400,
+            p: 4,
           }}
         >
-          {/* Floating Title */}
           <motion.div
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -371,29 +332,25 @@ const LoginPage = ({ setUser }) => {
               align="center"
               sx={{
                 mb: 3,
-                color: accentColor,
-                fontFamily: '"Roboto Slab", serif',
+                color: '#fff',
+                fontFamily: '"Playfair Display", serif',
               }}
             >
-              WildOGraphy
+              Wildography
             </Typography>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
-            className="animate__animated animate__fadeIn"
           >
             <Paper
               elevation={12}
               sx={{
                 p: 4,
-                maxWidth: 400,
                 borderRadius: 2,
-                backgroundColor: "rgba(255,255,255,0.2)",
-                backdropFilter: 'blur(10px)',
+                backgroundColor: "rgba(255,255,255,0.9)",
                 border: `2px solid ${accentColor}`,
-                boxShadow: `0 0 20px ${accentColor}`,
               }}
             >
               <Tabs value={tabIndex} onChange={handleTabChange} centered>
@@ -401,25 +358,27 @@ const LoginPage = ({ setUser }) => {
                 <Tab label="Sign Up" />
               </Tabs>
               {tabIndex === 0 ? loginForm : signUpForm}
-              <Typography variant="body2" align="center" sx={{ mt: 2, color: accentColor }}>
-                Discover breathtaking wildlife moments, share your experiences, and connect with nature enthusiasts.
+              <Typography variant="body2" align="center" sx={{ mt: 2, color: textColor }}>
+                Join us in preserving the wonders of wildlife.
               </Typography>
             </Paper>
           </motion.div>
-          {/* Typewriter Quote Overlay */}
+          {/* Typewriter Quote */}
           <Box
             sx={{
               position: 'absolute',
-              bottom: '10%',
+              bottom: '5%',
               width: '100%',
               textAlign: 'center',
+              zIndex: 2,
             }}
           >
             <Typography
-              variant="h4"
+              variant="h6"
               sx={{
-                color: accentColor,
-                fontFamily: '"Roboto Slab", serif',
+                color: '#fff',
+                fontFamily: '"Playfair Display", serif',
+                fontStyle: 'italic',
               }}
             >
               {typedQuote}
@@ -428,76 +387,81 @@ const LoginPage = ({ setUser }) => {
         </Box>
       </Box>
 
-      {/* Conservation & Environmental Stories Section */}
-      <Box
-        sx={{
-          p: 2,
-          backgroundColor: "rgba(210, 180, 140, 0.8)",
-          borderTop: `4px solid ${accentColor}`,
-        }}
-      >
-        <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 'bold', color: accentColor }}>
-          Conservation & Environmental Stories
+      {/* Conservation & Wildlife Stories Section */}
+      <Box sx={{ p: 4, backgroundColor: bgColor }}>
+        <Typography
+          variant="h4"
+          align="center"
+          gutterBottom
+          sx={{ fontWeight: 'bold', color: accentColor, fontFamily: '"Playfair Display", serif' }}
+        >
+          Stories of the Wild
         </Typography>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, mx: { xs: 2, md: 10 } }}>
+        <Grid container spacing={4} justifyContent="center">
           {articles.map((article, index) => (
-            <motion.div
-              key={article.id}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-            >
-              <Paper elevation={4} sx={{ p: 2, borderRadius: 2, backgroundColor: "#FFFDE7", boxShadow: `0 0 15px ${accentColor}` }}>
-                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: index % 2 === 0 ? 'row' : 'row-reverse' }, alignItems: 'center', gap: 2 }}>
-                  <Box sx={{ flex: 1 }}>
-                    {article.video ? (
-                      <video controls style={{ width: '100%', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0,0,0,0.2)' }}>
-                        <source src={article.video} type="video/mp4" />
-                        Your browser does not support video.
-                      </video>
-                    ) : (
-                      <img
-                        src={article.image}
-                        alt={article.title}
-                        style={{ width: '100%', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0,0,0,0.2)' }}
-                      />
-                    )}
-                  </Box>
-                  <Box sx={{ flex: 1, p: 1 }}>
+            <Grid item xs={12} sm={6} md={4} key={article.id}>
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: index * 0.2 }}
+              >
+                <Card
+                  sx={{
+                    borderRadius: 2,
+                    boxShadow: `0 4px 8px rgba(0,0,0,0.2)`,
+                    '&:hover': {
+                      transform: 'scale(1.05)',
+                      transition: 'transform 0.3s ease-in-out',
+                    },
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    height="200"
+                    image={article.image}
+                    alt={article.title}
+                  />
+                  <CardContent>
                     <Typography variant="h5" sx={{ mb: 1, color: accentColor, fontWeight: 'bold' }}>
                       {article.title}
                     </Typography>
-                    <Typography variant="body1" sx={{ mb: 1, color: textColor }}>
+                    <Typography variant="body2" sx={{ mb: 1, color: textColor }}>
                       {article.description}
                     </Typography>
-                    <Typography variant="body2" sx={{ color: "#5D4037" }}>
-                      Wildlife conservation is not just about protecting nature—it is about preserving life itself.
-                      Every effort contributes to a better future for all living creatures.
-                    </Typography>
-                  </Box>
-                </Box>
-              </Paper>
-            </motion.div>
+                    <Button
+                      variant="outlined"
+                      sx={{ mt: 2, color: accentColor, borderColor: accentColor }}
+                      onClick={() => {
+                        // Placeholder for future modal or navigation
+                        console.log(`Read more about ${article.title}`);
+                      }}
+                    >
+                      Read More
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Grid>
           ))}
-        </Box>
+        </Grid>
       </Box>
 
       {/* Footer */}
       <Box
         sx={{
-          backgroundColor: "#D2B48C",
-          color: accentColor,
+          backgroundColor: accentColor,
+          color: '#fff',
           py: 4,
           textAlign: 'center',
         }}
       >
         <Typography variant="body2">
-          &copy; {new Date().getFullYear()} WildOGraphy. All rights reserved.
+          © {new Date().getFullYear()} Wildography. All rights reserved.
         </Typography>
         <Typography variant="body2">
           Follow us on{' '}
-          <a href="#" style={{ color: accentColor, textDecoration: 'none' }}>
+          <a href="#" style={{ color: '#fff', textDecoration: 'none' }}>
             Social Media
           </a>
         </Typography>

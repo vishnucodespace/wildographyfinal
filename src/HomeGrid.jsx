@@ -1,4 +1,3 @@
-// src/components/HomeGrid.jsx
 import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -17,7 +16,7 @@ const Label = styled(Paper)(({ theme }) => ({
   borderBottomRightRadius: 0,
 }));
 
-export default function HomeGrid({ searchItem, currentUser }) {
+export default function HomeGrid({ currentUser }) {
   const [posts, setPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
 
@@ -34,16 +33,11 @@ export default function HomeGrid({ searchItem, currentUser }) {
     fetchPosts();
   }, []);
 
-  // Filter posts based on search input (case-insensitive)
-  const filteredPosts = posts.filter((post) =>
-    post.title.toLowerCase().includes(searchItem.toLowerCase())
-  );
-
   return (
     <Box sx={{ width: '100%', minHeight: '100vh', display: 'flex', justifyContent: 'center' }}>
       <Box sx={{ maxWidth: 1200, width: '100%', p: 2 }}>
         <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
-          {filteredPosts.map((post) => (
+          {posts.map((post) => (
             <Box
               key={post._id || post.id}
               sx={{ borderRadius: 2, overflow: 'hidden', cursor: 'pointer' }}

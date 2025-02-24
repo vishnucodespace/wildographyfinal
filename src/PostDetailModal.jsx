@@ -1,29 +1,26 @@
 // src/components/PostDetailModal.jsx
 import React, { useState, useEffect } from 'react';
 import { 
-  Box, 
-  Modal, 
-  IconButton, 
-  Typography, 
-  CardMedia, 
-  Divider, 
-  TextField, 
-  Button 
+  Box, Modal, IconButton, Typography, CardMedia, Divider, 
+  TextField, Button, Avatar 
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import { useNavigate } from 'react-router-dom';
 
 const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
   const [localPost, setLocalPost] = useState(post);
   const [commentText, setCommentText] = useState('');
+  const navigate = useNavigate();
 
-  // Update local state when post prop changes
+  // Update local post state when post prop changes
   useEffect(() => {
     setLocalPost(post);
+    console.log("PostDetailModal: post data:", post);
   }, [post]);
 
-  // Use the currentUser prop to get the commenter name
+  // Use currentUser for comment if available
   const commenterName = currentUser?.username || currentUser?.name || "Anonymous";
 
   const handleLike = async () => {
@@ -60,6 +57,14 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
     } catch (error) {
       console.error("Error adding comment:", error);
     }
+  };
+
+  // Use the poster's data from the post object
+  const posterAvatar = localPost.userAvatar || "https://via.placeholder.com/40";
+  const posterUsername = localPost.username || "Unknown User";
+
+  const handleProfileClick = () => {
+    navigate(`/viewprofile/${localPost.userId}`);
   };
 
   return (
@@ -110,27 +115,27 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
           </Box>
           {/* Details Section */}
           <Box sx={{ flex: 1, p: 3, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-            <Typography variant="h5" sx={{ mb: 2 }}>
-              {localPost.title}
-            </Typography>
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              {localPost.description}
-            </Typography>
+            {/* Poster Profile Section */}
+            <Box 
+              sx={{ display: 'flex', alignItems: 'center', mb: 2, cursor: 'pointer' }} 
+              onClick={handleProfileClick}
+            >
+              <Avatar src={posterAvatar} alt={posterUsername} sx={{ width: 40, height: 40, mr: 1 }} />
+              <Typography variant="subtitle1">{posterUsername}</Typography>
+            </Box>
+            <Typography variant="h5" sx={{ mb: 2 }}>{localPost.title}</Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>{localPost.description}</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <IconButton onClick={handleLike}>
                 <FavoriteIcon color="error" />
               </IconButton>
-              <Typography variant="body2" sx={{ ml: 1 }}>
-                {localPost.likes || 0} Likes
-              </Typography>
+              <Typography variant="body2" sx={{ ml: 1 }}>{localPost.likes || 0} Likes</Typography>
               <IconButton sx={{ ml: 2 }}>
                 <ChatBubbleOutlineIcon />
               </IconButton>
             </Box>
             <Divider sx={{ my: 2 }} />
-            <Typography variant="subtitle1" sx={{ mb: 1 }}>
-              Comments
-            </Typography>
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>Comments</Typography>
             <Box sx={{ flex: 1, overflowY: 'auto', maxHeight: 200, mb: 2 }}>
               {localPost.comments && localPost.comments.length > 0 ? (
                 localPost.comments.map((comment, index) => (
@@ -140,9 +145,7 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                   </Box>
                 ))
               ) : (
-                <Typography variant="body2" color="text.secondary">
-                  No comments yet.
-                </Typography>
+                <Typography variant="body2" color="text.secondary">No comments yet.</Typography>
               )}
             </Box>
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
@@ -154,9 +157,7 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
               />
-              <Button variant="contained" onClick={handleAddComment}>
-                Post
-              </Button>
+              <Button variant="contained" onClick={handleAddComment}>Post</Button>
             </Box>
           </Box>
         </Box>

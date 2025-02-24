@@ -1,7 +1,8 @@
+// models/Post.js
 const mongoose = require('mongoose');
 
 const CommentSchema = new mongoose.Schema({
-  user: { type: String, required: true }, // Name of the commenter (or user id)
+  user: { type: String, required: true },
   text: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 });
@@ -11,9 +12,11 @@ const PostSchema = new mongoose.Schema({
   title: { type: String, required: true },
   img: { type: String, required: true },
   description: { type: String },
+  tag: { type: String, default: 'Wild' },
+  username: { type: String },       // Poster’s username
+  userAvatar: { type: String },       // Poster’s avatar URL
   likes: { type: Number, default: 0 },
-  comments: { type: [CommentSchema], default: [] },
-  tag: { type: String, enum: ['Marine', 'Wild'], default: 'Wild' },
+  comments: { type: [CommentSchema], default: [] }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Post', PostSchema);

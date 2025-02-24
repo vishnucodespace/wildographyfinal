@@ -14,4 +14,18 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET /api/users/:id - Retrieve a single user by ID (excluding password)
+router.get('/:id', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id, '-password'); // Exclude password field
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 module.exports = router;

@@ -1,21 +1,20 @@
-// src/components/SearchPeoplePage.jsx
+// src/SearchPeoplePage.jsx
 import React, { useState, useEffect } from 'react';
 import { Box, Container, Grid, Card, CardContent, Avatar, Typography, TextField, Button } from '@mui/material';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const SearchPeoplePage = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
+  const navigate = useNavigate();
 
+  // Fetch users from the backend API
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await fetch('http://localhost:5174/api/users');
-        if (!response.ok) {
-          console.error("Server responded with status:", response.status);
-          return;
-        }
         const data = await response.json();
         console.log("Fetched users:", data);
         setUsers(data);
@@ -26,19 +25,17 @@ const SearchPeoplePage = () => {
     fetchUsers();
   }, []);
 
+  // Filter users based on the search query
   useEffect(() => {
     if (!searchQuery) {
       setFilteredUsers(users);
     } else {
       const query = searchQuery.toLowerCase();
-      const results = users.filter((user) => {
-        console.log("Filtering user:", user);
-        return (
-          (user.username && user.username.toLowerCase().includes(query)) ||
-          (user.name && user.name.toLowerCase().includes(query)) ||
-          (user.email && user.email.toLowerCase().includes(query))
-        );
-      });
+      const results = users.filter((user) =>
+        (user.username && user.username.toLowerCase().includes(query)) ||
+        (user.name && user.name.toLowerCase().includes(query)) ||
+        (user.email && user.email.toLowerCase().includes(query))
+      );
       console.log("Filtered results:", results);
       setFilteredUsers(results);
     }
@@ -65,13 +62,15 @@ const SearchPeoplePage = () => {
               <motion.div whileHover={{ scale: 1.03 }} transition={{ duration: 0.3 }}>
                 <Card sx={{ display: 'flex', alignItems: 'center', p: 2 }}>
                   <Avatar src={user.avatar} sx={{ width: 60, height: 60, mr: 2 }} />
-                  <CardContent>
+                  <CardContent sx={{ flexGrow: 1 }}>
                     <Typography variant="h6">{user.username || user.name}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {user.name || user.email}
-                    </Typography>
+                    <Typography variant="body2" color="text.secondary">{user.name || user.email}</Typography>
                   </CardContent>
-                  <Button variant="outlined" sx={{ ml: 'auto' }}>
+                  <Button 
+                    variant="outlined" 
+                    sx={{ ml: 'auto' }} 
+                    onClick={() => navigate(`/viewprofile/${user._id || user.id}`)}
+                  >
                     View Profile
                   </Button>
                 </Card>

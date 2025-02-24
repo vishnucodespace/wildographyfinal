@@ -12,7 +12,9 @@ import {
   TextField,
   Container,
   Divider,
+  IconButton,
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete'; // Added for trash icon
 import PostDetailModal from './PostDetailModal';
 
 const ProfilePage = ({ user, setUser }) => {
@@ -90,28 +92,47 @@ const ProfilePage = ({ user, setUser }) => {
     window.location.href = '/';
   };
 
-  const blueButtonSx = {
-    backgroundColor: "#1976d2",
-    "&:hover": { backgroundColor: "#115293" },
-    textTransform: "none",
+  const handleDelete = async (postId) => {
+    try {
+      const response = await fetch(`http://localhost:5174/api/posts/${postId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (response.ok) {
+        setPosts(posts.filter((post) => (post._id || post.id) !== postId));
+      } else {
+        const data = await response.json();
+        alert(`Failed to delete post: ${data.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      alert('Error deleting post. Please try again.');
+    }
   };
+
+  const blueButtonSx = (theme) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? '#42a5f5' : '#1976d2',
+    "&:hover": {
+      backgroundColor: theme.palette.mode === 'dark' ? '#1976d2' : '#115293',
+    },
+    textTransform: "none",
+  });
 
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
       <Paper
+        elevation={3}
         sx={{
           p: 4,
           mb: 4,
           borderRadius: 3,
-          boxShadow: 3,
-          backgroundColor: '#fff',
           position: 'relative',
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar
             src={user.avatar}
-            sx={{ width: 120, height: 120, mr: 3, border: '3px solid #f0f0f0' }}
+            sx={{ width: 120, height: 120, mr: 3, border: '3px solid', borderColor: 'grey.200' }}
           />
           <Box sx={{ flex: 1 }}>
             <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
@@ -129,7 +150,7 @@ const ProfilePage = ({ user, setUser }) => {
               </Button>
             </Box>
             <Box sx={{ mt: 1 }}>
-              <Typography variant="body1" sx={{ fontWeight: 'bold', color: blueButtonSx.backgroundColor }}>
+              <Typography variant="body1" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
                 Troop: {user.troop}
               </Typography>
             </Box>
@@ -161,7 +182,8 @@ const ProfilePage = ({ user, setUser }) => {
                   overflow: 'hidden',
                   transition: 'transform 0.2s',
                   '&:hover': { transform: 'scale(1.02)' },
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  position: 'relative', // For absolute positioning of delete icon
                 }}
                 onClick={() => setSelectedPost(post)}
               >
@@ -181,33 +203,47 @@ const ProfilePage = ({ user, setUser }) => {
                     </Typography>
                   )}
                 </Box>
+                <IconButton
+                  sx={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    color: 'error.main',
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(post._id || post.id);
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
               </Card>
             </Grid>
           ))}
         </Grid>
       ) : (
-        <Typography variant="body2" sx={{ mt: 2, color: 'gray', textAlign: 'center' }}>
+        <Typography variant="body2" sx={{ mt: 2, color: 'text.secondary', textAlign: 'center' }}>
           No posts yet.
         </Typography>
       )}
 
       {selectedPost && (
         <Modal open={Boolean(selectedPost)} onClose={() => setSelectedPost(null)}>
-          <PostDetailModal post={selectedPost} onClose={() => setSelectedPost(null)} />
+          <PostDetailModal post={selectedPost} onClose={() => setSelectedPost(null)} currentUser={user} />
         </Modal>
       )}
 
       <Modal open={editOpen} onClose={handleEditClose}>
         <Box
-          sx={{
+          sx={(theme) => ({
             p: 4,
             width: { xs: '90%', sm: 400 },
             mx: 'auto',
             mt: '20vh',
-            backgroundColor: 'white',
+            backgroundColor: theme.palette.background.paper,
             borderRadius: 3,
             boxShadow: 3,
-          }}
+          })}
         >
           <Typography variant="h6" sx={{ mb: 2 }}>
             Edit Profile
@@ -219,7 +255,7 @@ const ProfilePage = ({ user, setUser }) => {
           <Typography variant="body2" sx={{ mb: 1 }}>
             Email: {user.email}
           </Typography>
-          <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold', color: blueButtonSx.backgroundColor }}>
+          <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold', color: 'primary.main' }}>
             Troop: {user.troop}
           </Typography>
           <TextField
@@ -239,11 +275,11 @@ const ProfilePage = ({ user, setUser }) => {
             onChange={handleChange}
           />
           {errorMessage && (
-            <Typography variant="body2" sx={{ mt: 1, color: 'red' }}>
+            <Typography variant="body2" sx={{ mt: 1, color: 'error.main' }}>
               {errorMessage}
             </Typography>
           )}
-          <Button variant="contained" fullWidth sx={{ mt: 2, ...blueButtonSx }} onClick={handleSave}>
+          <Button variant="contained" fullWidth sx={[blueButtonSx, { mt: 2 }]} onClick={handleSave}>
             Save Changes
           </Button>
         </Box>
