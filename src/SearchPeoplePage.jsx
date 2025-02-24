@@ -16,7 +16,7 @@ const SearchPeoplePage = () => {
       try {
         const response = await fetch('http://localhost:5174/api/users');
         const data = await response.json();
-        console.log("Fetched users:", data);
+        console.log("Fetched users:", data); // Check the output here
         setUsers(data);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -36,7 +36,7 @@ const SearchPeoplePage = () => {
         (user.name && user.name.toLowerCase().includes(query)) ||
         (user.email && user.email.toLowerCase().includes(query))
       );
-      console.log("Filtered results:", results);
+      console.log("Filtered results:", results); // Check filtering output
       setFilteredUsers(results);
     }
   }, [searchQuery, users]);

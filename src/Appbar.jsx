@@ -1,16 +1,32 @@
-import React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
+import React, { useState, useEffect } from 'react';
+import { AppBar, Toolbar, Typography, IconButton, Tooltip, Box, Avatar } from '@mui/material';
+import { Brightness4 as Brightness4Icon, Brightness7 as Brightness7Icon } from '@mui/icons-material';
 import { motion } from 'framer-motion';
-import Avatars from './Avatars';
-import Tooltip from '@mui/material/Tooltip';
-import Box from '@mui/material/Box';
+import { useNavigate } from 'react-router-dom';
 
 export default function Appbar({ toggleDarkMode, darkMode }) {
+  const [currentUser, setCurrentUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch current user data from the backend API
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await fetch('http://localhost:5174/api/users/current');
+        const data = await response.json();
+        setCurrentUser(data);
+      } catch (error) {
+        console.error('Error fetching current user:', error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
+
+  const handleProfileClick = () => {
+    navigate('/profile'); // Adjust the path as needed
+  };
+
   return (
     <AppBar
       position="fixed"
@@ -22,7 +38,7 @@ export default function Appbar({ toggleDarkMode, darkMode }) {
     >
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         <Typography
-          variant="h4" // Larger than h6, adjustable
+          variant="h4"
           sx={{
             fontFamily: '"Great Vibes", cursive',
             fontWeight: 'bold',
@@ -38,13 +54,15 @@ export default function Appbar({ toggleDarkMode, darkMode }) {
               </IconButton>
             </Tooltip>
           </motion.div>
-          <motion.div whileHover={{ scale: 1.1 }}>
-            <Tooltip title="Profile">
-              <IconButton color="inherit">
-                <Avatars />
-              </IconButton>
-            </Tooltip>
-          </motion.div>
+          {currentUser && (
+            <motion.div whileHover={{ scale: 1.1 }}>
+              <Tooltip title="Profile">
+                <IconButton color="inherit" onClick={handleProfileClick}>
+                  <Avatar src={currentUser.avatar} alt={currentUser.name} />
+                </IconButton>
+              </Tooltip>
+            </motion.div>
+          )}
         </Box>
       </Toolbar>
     </AppBar>
