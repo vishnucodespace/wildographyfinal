@@ -1,4 +1,3 @@
-// src/LoginPage.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -8,15 +7,56 @@ import {
   Paper,
   Tabs,
   Tab,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import 'animate.css';
 
+// Lion-inspired, sunlit theme variables
+const accentColor = "#FFD700"; // Rich golden color
+const bgColor = "#FFF8DC";     // Cornsilk, a light warm yellow
+const textColor = "#3E2723";   // Dark brown for contrast
+
+// Array of quotes for typewriter effect
 const quotesArray = [
   "The Earth is what we all have in common. – Wendell Berry",
   "The greatest threat to our planet is the belief that someone else will save it. – Robert Swan",
   "Nature always wears the colors of the spirit. – Ralph Waldo Emerson",
   "In nature, nothing exists alone. – Rachel Carson",
+];
+
+// Articles for the Conservation section
+const articles = [
+  {
+    id: 1,
+    title: "Protecting the Coral Reefs",
+    image:
+      "https://images.pexels.com/photos/158607/corals-reef-ocean-sea-158607.jpeg?auto=compress&cs=tinysrgb",
+    description:
+      "Marine conservation efforts are restoring coral reefs, vital to marine biodiversity. These ecosystems provide shelter, food, and breeding grounds for countless species.",
+    video: "https://www.w3schools.com/html/mov_bbb.mp4",
+  },
+  {
+    id: 2,
+    title: "Deforestation Crisis",
+    image:
+      "https://images.pexels.com/photos/3408744/pexels-photo-3408744.jpeg?auto=compress&cs=tinysrgb",
+    description:
+      "Rapid deforestation is threatening wildlife habitats and accelerating climate change. Community-driven conservation programs aim to restore lost forests.",
+    video: null,
+  },
+  {
+    id: 3,
+    title: "Reforestation Efforts",
+    image:
+      "https://images.pexels.com/photos/33109/fantasy-forest-trees-mist.jpg?auto=compress&cs=tinysrgb",
+    description:
+      "Reforestation initiatives transform barren lands into thriving forests, reviving ecosystems and sequestering carbon.",
+    video: "https://www.w3schools.com/html/movie.mp4",
+  },
 ];
 
 const LoginPage = ({ setUser }) => {
@@ -26,8 +66,12 @@ const LoginPage = ({ setUser }) => {
   const [loginPassword, setLoginPassword] = useState('');
   // Sign Up form states
   const [signUpName, setSignUpName] = useState('');
+  const [signUpUsername, setSignUpUsername] = useState('');
+  const [signUpTroop, setSignUpTroop] = useState('wildOgrapher'); // default selection
   const [signUpEmail, setSignUpEmail] = useState('');
   const [signUpPassword, setSignUpPassword] = useState('');
+  // Error message state
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Typewriter effect states
   const [typedQuote, setTypedQuote] = useState("");
@@ -36,40 +80,66 @@ const LoginPage = ({ setUser }) => {
 
   const handleTabChange = (event, newValue) => {
     setTabIndex(newValue);
+    // Clear any previous errors when switching tabs
+    setErrorMessage("");
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const user = {
-      id: loginEmail,
-      name: loginEmail.split('@')[0],
-      email: loginEmail,
-      avatar:
-        'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-    };
-    localStorage.setItem('user', JSON.stringify(user));
-    setUser(user);
+    setErrorMessage(""); // Clear any existing error
+    try {
+      const response = await fetch('http://localhost:5174/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        setUser(data.user);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+      } else {
+        // Display error message from backend
+        setErrorMessage(data.error);
+      }
+    } catch (error) {
+      console.error("Error logging in:", error);
+      setErrorMessage("Error logging in. Please try again later.");
+    }
   };
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
-    const user = {
-      id: signUpEmail,
-      name: signUpName,
-      email: signUpEmail,
-      avatar:
-        'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-    };
-    localStorage.setItem('user', JSON.stringify(user));
-    setUser(user);
+    setErrorMessage("");
+    try {
+      const response = await fetch('http://localhost:5174/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          name: signUpName, 
+          username: signUpUsername,
+          troop: signUpTroop,
+          email: signUpEmail, 
+          password: signUpPassword, 
+          avatar: '' 
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // Optionally, automatically log in the user after signup
+        setUser(data.user);
+        localStorage.setItem('user', JSON.stringify(data.user));
+      } else {
+        setErrorMessage(data.error);
+      }
+    } catch (error) {
+      console.error("Error signing up:", error);
+      setErrorMessage("Error signing up. Please try again later.");
+    }
   };
 
-  // Lion-inspired, sunlit theme variables
-  const accentColor = "#FFD700"; // Rich golden color
-  const bgColor = "#FFF8DC";     // Cornsilk, a light warm yellow
-  const textColor = "#3E2723";   // Dark brown for contrast
-
-  // Typewriter effect for the quotes
+  // Typewriter effect for quotes
   useEffect(() => {
     let timer;
     const currentQuote = quotesArray[currentQuoteIndex];
@@ -132,6 +202,11 @@ const LoginPage = ({ setUser }) => {
       >
         Login
       </Button>
+      {errorMessage && (
+        <Typography variant="body2" sx={{ mt: 2, color: "red" }}>
+          {errorMessage}
+        </Typography>
+      )}
     </Box>
   );
 
@@ -145,6 +220,33 @@ const LoginPage = ({ setUser }) => {
         required
         value={signUpName}
         onChange={(e) => setSignUpName(e.target.value)}
+        InputProps={{
+          sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor },
+        }}
+        InputLabelProps={{ sx: { color: textColor } }}
+      />
+      {/* Dropdown for Troop Selection */}
+      <FormControl fullWidth margin="normal" variant="outlined" required>
+        <InputLabel id="troop-select-label">Troop</InputLabel>
+        <Select
+          labelId="troop-select-label"
+          id="troop-select"
+          value={signUpTroop}
+          label="Troop"
+          onChange={(e) => setSignUpTroop(e.target.value)}
+        >
+          <MenuItem value="wildOgrapher">WildOgrapher</MenuItem>
+          <MenuItem value="naturalist">Naturalist</MenuItem>
+        </Select>
+      </FormControl>
+      <TextField
+        label="Username"
+        fullWidth
+        margin="normal"
+        variant="outlined"
+        required
+        value={signUpUsername}
+        onChange={(e) => setSignUpUsername(e.target.value)}
         InputProps={{
           sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor },
         }}
@@ -192,53 +294,27 @@ const LoginPage = ({ setUser }) => {
       >
         Sign Up
       </Button>
+      {errorMessage && (
+        <Typography variant="body2" sx={{ mt: 2, color: "red" }}>
+          {errorMessage}
+        </Typography>
+      )}
     </Box>
   );
 
-  // Conservation & Environmental Stories (structure retained)
-  const articles = [
-    {
-      id: 1,
-      title: "Protecting the Coral Reefs",
-      image:
-        "https://images.pexels.com/photos/158607/corals-reef-ocean-sea-158607.jpeg?auto=compress&cs=tinysrgb",
-      description:
-        "Marine conservation efforts are restoring coral reefs, vital to marine biodiversity. These ecosystems provide shelter, food, and breeding grounds for countless species.",
-      video: "https://www.w3schools.com/html/mov_bbb.mp4",
-    },
-    {
-      id: 2,
-      title: "Deforestation Crisis",
-      image:
-        "https://images.pexels.com/photos/3408744/pexels-photo-3408744.jpeg?auto=compress&cs=tinysrgb",
-      description:
-        "Rapid deforestation is threatening wildlife habitats and accelerating climate change. Community-driven conservation programs aim to restore lost forests.",
-      video: null,
-    },
-    {
-      id: 3,
-      title: "Reforestation Efforts",
-      image:
-        "https://images.pexels.com/photos/33109/fantasy-forest-trees-mist.jpg?auto=compress&cs=tinysrgb",
-      description:
-        "Reforestation initiatives transform barren lands into thriving forests, reviving ecosystems and sequestering carbon.",
-      video: "https://www.w3schools.com/html/movie.mp4",
-    },
-  ];
-
   return (
     <Box sx={{ width: '100vw', overflowX: 'hidden' }}>
-      {/* Login/Sign Up Section with Borderless Video Background */}
+      {/* Login/Sign Up Section with Scrolling Background Video */}
       <Box
         sx={{
           position: 'relative',
           width: '100vw',
-          height: '100vh',
+          minHeight: '100vh',
           overflow: 'hidden',
           backgroundColor: bgColor,
         }}
       >
-        {/* Background Video without borders */}
+        {/* Background Video */}
         <video
           autoPlay
           loop
@@ -280,11 +356,11 @@ const LoginPage = ({ setUser }) => {
             alignItems: 'center',
             justifyContent: 'center',
             width: '100vw',
-            height: '100vh',
+            minHeight: '100vh',
             px: 2,
           }}
         >
-          {/* Floating Title (no glow on text) */}
+          {/* Floating Title */}
           <motion.div
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -330,7 +406,7 @@ const LoginPage = ({ setUser }) => {
               </Typography>
             </Paper>
           </motion.div>
-          {/* Typewriter Quote Overlay (no glow on text) */}
+          {/* Typewriter Quote Overlay */}
           <Box
             sx={{
               position: 'absolute',
@@ -356,7 +432,7 @@ const LoginPage = ({ setUser }) => {
       <Box
         sx={{
           p: 2,
-          backgroundColor: "#D2B48C", // Yellowish brown
+          backgroundColor: "rgba(210, 180, 140, 0.8)",
           borderTop: `4px solid ${accentColor}`,
         }}
       >

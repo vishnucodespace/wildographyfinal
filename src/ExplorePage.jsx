@@ -1,67 +1,97 @@
-// src/components/ExplorePage.jsx
+// ExplorePage.jsx
 import React, { useState, useEffect } from 'react';
-import { Box, Grid, Card, CardMedia, Typography } from '@mui/material';
+import { Container, Typography, Box, TextField, Tabs, Tab } from '@mui/material';
+import Masonry from '@mui/lab/Masonry';
 import { motion } from 'framer-motion';
+import PostDetailModal from './PostDetailModal';
 
-const ExplorePage = () => {
+const ExplorePage = ({currentUser}) => {
   const [posts, setPosts] = useState([]);
+  const [selectedTag, setSelectedTag] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedPost, setSelectedPost] = useState(null);
 
   useEffect(() => {
-    const storedPosts = JSON.parse(localStorage.getItem('posts')) || [];
-    setPosts(storedPosts);
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch('http://localhost:5174/api/posts');
+        const data = await response.json();
+        setPosts(data);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
+    fetchPosts();
   }, []);
 
-  // Example video card (could be one of many)
-  const videoCard = {
-    id: 'video-1',
-    video: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    title: 'Wildlife in Action'
+  const filteredPosts = posts.filter((post) => {
+    const matchesTag = selectedTag === "All" || post.tag === selectedTag;
+    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesTag && matchesSearch;
+  });
+
+  const handleTabChange = (event, newValue) => {
+    setSelectedTag(newValue);
   };
 
-  // Combine posts with a video card inserted at a desired index (e.g., after 2 items)
-  const combinedPosts = [...posts];
-  combinedPosts.splice(2, 0, videoCard);
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handlePostClick = (post) => setSelectedPost(post);
+  const handleCloseModal = () => setSelectedPost(null);
 
   return (
-    <Box sx={{ p: 4 }}>
-      <Typography variant="h4" gutterBottom align="center">
-        Explore Posts from the Wild
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Typography variant="h4" align="center" gutterBottom>
+        Explore Posts
       </Typography>
-      <Grid container spacing={2}>
-        {combinedPosts.map((item) => (
-          <Grid item key={item.id} xs={12} sm={6} md={4}>
-            <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
-              {item.video ? (
-                <Card sx={{ borderRadius: 2 }}>
-                  <CardMedia
-                    component="video"
-                    controls
-                    image={item.video}
-                    title={item.title}
-                    sx={{ height: 300, objectFit: 'cover' }}
-                  />
-                  <Typography variant="body1" align="center" sx={{ p: 1 }}>
-                    {item.title}
-                  </Typography>
-                </Card>
-              ) : (
-                <Card sx={{ borderRadius: 2 }}>
-                  <CardMedia
-                    component="img"
-                    image={item.img}
-                    alt={item.title}
-                    sx={{ height: 300, objectFit: 'cover' }}
-                  />
-                  <Typography variant="body1" align="center" sx={{ p: 1 }}>
-                    {item.title}
-                  </Typography>
-                </Card>
-              )}
-            </motion.div>
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+        <TextField
+          label="Search posts..."
+          variant="outlined"
+          value={searchQuery}
+          onChange={handleSearchChange}
+          sx={{ width: '60%' }}
+        />
+      </Box>
+      <Tabs
+        value={selectedTag}
+        onChange={handleTabChange}
+        centered
+        textColor="primary"
+        indicatorColor="primary"
+      >
+        <Tab label="All" value="All" />
+        <Tab label="Marine" value="Marine" />
+        <Tab label="Wild" value="Wild" />
+      </Tabs>
+      <Box sx={{ mt: 4 }}>
+        <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
+          {filteredPosts.map((post) => (
+            <Box
+              key={post._id || post.id}
+              sx={{ borderRadius: 2, overflow: 'hidden', cursor: 'pointer' }}
+              onClick={() => handlePostClick(post)}
+            >
+              <motion.div whileHover={{ scale: 1.03 }} transition={{ duration: 0.3 }}>
+                {post.video ? (
+                  <img src={post.video} alt={post.title} style={{ width: '100%', height: 300, objectFit: 'cover', borderRadius: 8 }} />
+                ) : (
+                  <img src={post.img} alt={post.title} style={{ width: '100%', height: 300, objectFit: 'cover', borderRadius: 8 }} />
+                )}
+                <Typography variant="body1" align="center" sx={{ mt: 1 }}>
+                  {post.title}
+                </Typography>
+              </motion.div>
+            </Box>
+          ))}
+        </Masonry>
+      </Box>
+      {selectedPost && (
+        <PostDetailModal post={selectedPost} onClose={handleCloseModal} currentUser = {currentUser}/>
+      )}
+    </Container>
   );
 };
 

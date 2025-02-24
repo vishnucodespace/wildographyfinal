@@ -31,10 +31,12 @@ const theme = (darkMode) =>
 const App = () => {
   const [user, setUser] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
+  const [currentUser,setCurrentUser] = useState(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) setUser(JSON.parse(storedUser));
+    
   }, []);
 
   const toggleDarkMode = () => setDarkMode((prev) => !prev);
