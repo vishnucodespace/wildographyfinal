@@ -15,12 +15,16 @@ router.post('/signup', async (req, res) => {
     user = new User({ name, email, password: hashedPassword, avatar, username, troop });
     await user.save();
     
-    res.status(201).json({ message: "User created successfully", user });
+    // Generate a token for the new user
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '2h' });
+    
+    res.status(201).json({ message: "User created successfully", token, user });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
 });
+
 
 // POST /api/auth/login
 router.post('/login', async (req, res) => {

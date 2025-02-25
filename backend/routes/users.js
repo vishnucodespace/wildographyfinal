@@ -126,11 +126,11 @@ router.post('/:id/accept-follow-request', requireAuth, async (req, res) => {
     if (!followerUser || !targetUser) {
       return res.status(404).json({ error: 'User not found' });
     }
-    // Add follower to target's followers if not already present.
+    // Add requester to target's followers if not already present.
     if (!targetUser.followers.includes(followerId)) {
       targetUser.followers.push(followerId);
     }
-    // Add target to follower's following if not already present.
+    // Add target to requester's following if not already present.
     if (!followerUser.following.includes(targetUserId)) {
       followerUser.following.push(targetUserId);
     }
@@ -194,4 +194,30 @@ router.post('/:id/follow-back', requireAuth, async (req, res) => {
   }
 });
 
+// GET followers for a user
+router.get('/:id/followers', async (req, res) => {
+  try {
+    // Populate followers with additional user info (excluding password)
+    const user = await User.findById(req.params.id).populate('followers', '-password');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json(user.followers);
+  } catch (error) {
+    console.error("Error fetching followers:", error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+  
+// GET following for a user
+router.get('/:id/following', async (req, res) => {
+  try {
+    // Populate following with additional user info (excluding password)
+    const user = await User.findById(req.params.id).populate('following', '-password');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json(user.following);
+  } catch (error) {
+    console.error("Error fetching following:", error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+  
 module.exports = router;

@@ -119,9 +119,10 @@ const LoginPage = ({ setUser }) => {
       });
       const data = await response.json();
       if (response.ok) {
+        // Save token and user data
         localStorage.setItem('token', data.token);
-        setUser(data.user);
         localStorage.setItem('user', JSON.stringify(data.user));
+        setUser(data.user);
       } else {
         setErrorMessage(data.error);
       }
@@ -130,7 +131,7 @@ const LoginPage = ({ setUser }) => {
       setErrorMessage("Error signing up. Please try again later.");
     }
   };
-
+  
   // Typewriter effect for quotes
   useEffect(() => {
     let timer;

@@ -13,9 +13,14 @@ import {
   Container,
   Divider,
   IconButton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PostDetailModal from './PostDetailModal';
+import { useNavigate } from 'react-router-dom';
 
 const ProfilePage = ({ user, setUser }) => {
   const [posts, setPosts] = useState([]);
@@ -26,7 +31,13 @@ const ProfilePage = ({ user, setUser }) => {
     username: user?.username || '',
     avatar: user?.avatar || '',
   });
+  const [openFollowers, setOpenFollowers] = useState(false);
+  const [openFollowing, setOpenFollowing] = useState(false);
+  const [followers, setFollowers] = useState([]);
+  const [following, setFollowing] = useState([]);
+  const navigate = useNavigate();
 
+  // Fetch posts created by the user
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -44,6 +55,77 @@ const ProfilePage = ({ user, setUser }) => {
       fetchPosts();
     }
   }, [user]);
+
+  // Re-fetch current user data to update followers/following counts
+  const fetchCurrentUser = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      const response = await fetch('http://localhost:5174/api/users/current', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const updatedUser = await response.json();
+        setUser(updatedUser);
+      } else {
+        console.error('Failed to fetch updated user data.');
+      }
+    } catch (error) {
+      console.error('Error fetching updated user:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchCurrentUser();
+    }
+  }, [user]);
+
+  // Fetch followers when modal opens
+  useEffect(() => {
+    if (openFollowers && user) {
+      const fetchFollowers = async () => {
+        try {
+          const token = localStorage.getItem('token');
+          const response = await fetch(`http://localhost:5174/api/users/${user._id}/followers`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setFollowers(data);
+          } else {
+            console.error('Failed to fetch followers.');
+          }
+        } catch (error) {
+          console.error('Error fetching followers:', error);
+        }
+      };
+      fetchFollowers();
+    }
+  }, [openFollowers, user]);
+
+  // Fetch following when modal opens
+  useEffect(() => {
+    if (openFollowing && user) {
+      const fetchFollowing = async () => {
+        try {
+          const token = localStorage.getItem('token');
+          const response = await fetch(`http://localhost:5174/api/users/${user._id}/following`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setFollowing(data);
+          } else {
+            console.error('Failed to fetch following.');
+          }
+        } catch (error) {
+          console.error('Error fetching following:', error);
+        }
+      };
+      fetchFollowing();
+    }
+  }, [openFollowing, user]);
 
   const handleEditOpen = () => {
     setErrorMessage('');
@@ -80,13 +162,14 @@ const ProfilePage = ({ user, setUser }) => {
         setErrorMessage(data.error);
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
-      setErrorMessage("Error updating profile. Please try again later.");
+      console.error('Error updating profile:', error);
+      setErrorMessage('Error updating profile. Please try again later.');
     }
   };
 
   const handleLogout = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
     setUser(null);
     window.location.href = '/';
   };
@@ -109,13 +192,12 @@ const ProfilePage = ({ user, setUser }) => {
     }
   };
 
-  // Button style (assuming blueButtonSx is a function that returns style object)
   const blueButtonSx = (theme) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#42a5f5' : '#1976d2',
-    "&:hover": {
+    '&:hover': {
       backgroundColor: theme.palette.mode === 'dark' ? '#1976d2' : '#115293',
     },
-    textTransform: "none",
+    textTransform: 'none',
   });
 
   return (
@@ -136,16 +218,16 @@ const ProfilePage = ({ user, setUser }) => {
           />
           <Box sx={{ flex: 1 }}>
             <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-              {user.username || "Not set"}
+              {user.username || 'Not set'}
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
               <Button variant="contained" sx={blueButtonSx} size="small">
                 Posts: {posts.length}
               </Button>
-              <Button variant="contained" sx={blueButtonSx} size="small">
+              <Button variant="contained" sx={blueButtonSx} size="small" onClick={() => setOpenFollowers(true)}>
                 Followers: {user.followers ? user.followers.length : 0}
               </Button>
-              <Button variant="contained" sx={blueButtonSx} size="small">
+              <Button variant="contained" sx={blueButtonSx} size="small" onClick={() => setOpenFollowing(true)}>
                 Following: {user.following ? user.following.length : 0}
               </Button>
             </Box>
@@ -233,6 +315,7 @@ const ProfilePage = ({ user, setUser }) => {
         </Modal>
       )}
 
+      {/* Edit Profile Modal */}
       <Modal open={editOpen} onClose={handleEditClose}>
         <Box
           sx={(theme) => ({
@@ -282,6 +365,88 @@ const ProfilePage = ({ user, setUser }) => {
           <Button variant="contained" fullWidth sx={[blueButtonSx, { mt: 2 }]} onClick={handleSave}>
             Save Changes
           </Button>
+        </Box>
+      </Modal>
+
+      {/* Followers Modal */}
+      <Modal open={openFollowers} onClose={() => setOpenFollowers(false)}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: { xs: '90%', sm: 400 },
+            bgcolor: 'background.paper',
+            borderRadius: 2,
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Followers
+          </Typography>
+          {followers.length === 0 ? (
+            <Typography variant="body2">No followers found.</Typography>
+          ) : (
+            <List>
+              {followers.map((follower) => (
+                <ListItem key={follower._id} divider>
+                  <ListItemAvatar>
+                    <Avatar src={follower.avatar} alt={follower.username || follower.name} />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={follower.username || follower.name}
+                    secondary={follower.email}
+                  />
+                  <Button variant="outlined" onClick={() => navigate(`/viewprofile/${follower._id}`)}>
+                    View Profile
+                  </Button>
+                </ListItem>
+              ))}
+            </List>
+          )}
+        </Box>
+      </Modal>
+
+      {/* Following Modal */}
+      <Modal open={openFollowing} onClose={() => setOpenFollowing(false)}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: { xs: '90%', sm: 400 },
+            bgcolor: 'background.paper',
+            borderRadius: 2,
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Following
+          </Typography>
+          {following.length === 0 ? (
+            <Typography variant="body2">Not following anyone.</Typography>
+          ) : (
+            <List>
+              {following.map((followed) => (
+                <ListItem key={followed._id} divider>
+                  <ListItemAvatar>
+                    <Avatar src={followed.avatar} alt={followed.username || followed.name} />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={followed.username || followed.name}
+                    secondary={followed.email}
+                  />
+                  <Button variant="outlined" onClick={() => navigate(`/viewprofile/${followed._id}`)}>
+                    View Profile
+                  </Button>
+                </ListItem>
+              ))}
+            </List>
+          )}
         </Box>
       </Modal>
     </Container>

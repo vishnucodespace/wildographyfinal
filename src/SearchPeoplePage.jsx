@@ -1,4 +1,3 @@
-// src/SearchPeoplePage.jsx
 import React, { useState, useEffect } from 'react';
 import { Box, Container, Grid, Card, CardContent, Avatar, Typography, TextField, Button } from '@mui/material';
 import { motion } from 'framer-motion';
@@ -69,7 +68,12 @@ const SearchPeoplePage = () => {
                   <Button 
                     variant="outlined" 
                     sx={{ ml: 'auto' }} 
-                    onClick={() => navigate(`/viewprofile/${user._id || user.id}`)}
+                    onClick={() => {
+                      // Retrieve the current logged-in user's data from localStorage
+                      const storedUser = localStorage.getItem('user');
+                      const currentUser = storedUser ? JSON.parse(storedUser) : null;
+                      navigate(`/viewprofile/${user._id || user.id}`, { state: { currentUser } });
+                    }}
                   >
                     View Profile
                   </Button>

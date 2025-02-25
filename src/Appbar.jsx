@@ -78,7 +78,7 @@ export default function Appbar({ toggleDarkMode, darkMode }) {
             <motion.div whileHover={{ scale: 1.1 }}>
               <Tooltip title="Profile">
                 <IconButton color="inherit" onClick={handleProfileClick}>
-                  <Avatar src={currentUser.avatar || "/default-avatar.png"} alt={currentUser.name} />
+                <Avatar src={currentUser.avatar || "https://example.com/path/to/default-avatar.png"} alt={currentUser.name} />
                 </IconButton>
               </Tooltip>
             </motion.div>
