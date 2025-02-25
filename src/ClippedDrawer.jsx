@@ -22,6 +22,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import CategoryIcon from '@mui/icons-material/Category';
 import NatureIcon from '@mui/icons-material/Nature';
 import SettingsIcon from '@mui/icons-material/Settings';
+import PersonAddIcon from '@mui/icons-material/PersonAdd'; // Icon for Follow Requests
 import HomeGrid from './HomeGrid';
 import ExplorePage from './ExplorePage';
 import ProfilePage from './ProfilePage';
@@ -31,6 +32,8 @@ import ConservationPage from './ConservationPage';
 import Appbar from './Appbar';
 import SearchPeoplePage from './SearchPeoplepage';
 import ViewProfile from './ViewProfile';
+import Notifications from './Notifications';
+import FollowRequests from './FollowRequests';
 
 const drawerWidth = 260;
 
@@ -61,7 +64,7 @@ export default function ClippedDrawer({ user, setUser, toggleDarkMode, darkMode 
               { text: 'Upload', icon: <AddAPhotoIcon />, path: '/upload' },
               { text: 'Profile', icon: <PersonIcon />, path: '/profile' },
               { text: 'Search People', icon: <SearchIcon />, path: '/searchpeople' },
-              { text: 'Messages', icon: <MailIcon />, path: '/messages' },
+              { text: 'Notifications', icon: <MailIcon />, path: '/notifications' },
             ].map(({ text, icon, path }) => (
               <ListItem key={text} disablePadding>
                 <ListItemButton
@@ -83,9 +86,10 @@ export default function ClippedDrawer({ user, setUser, toggleDarkMode, darkMode 
             ))}
           </List>
           <Divider />
+          {/* Replacing Categories with Follow Requests */}
           <List>
             {[
-              { text: 'Categories', icon: <CategoryIcon />, path: '/categories' },
+              { text: 'Follow Requests', icon: <PersonAddIcon />, path: '/follow-requests' },
               { text: 'Conservation', icon: <NatureIcon />, path: '/conservation' },
             ].map(({ text, icon, path }) => (
               <ListItem key={text} disablePadding>
@@ -150,20 +154,12 @@ export default function ClippedDrawer({ user, setUser, toggleDarkMode, darkMode 
           <Route path="/upload" element={<UploadPostPage />} />
           <Route path="/profile" element={<ProfilePage user={user} setUser={setUser} />} />
           <Route path="/searchpeople" element={<SearchPeoplePage />} />
-          <Route
-            path="/messages"
-            element={
-              <div style={{ padding: '20px' }}>
-                <h2>Messages Page</h2>
-              </div>
-            }
-          />
+          <Route path="/notifications" element={<Notifications currentUser={user} />} />
           <Route path="/conservation" element={<ConservationPage />} />
-          <Route
-            path="/settings"
-            element={<SettingsPage darkMode={darkMode} toggleDarkMode={toggleDarkMode} />}
-          />
+          <Route path="/settings" element={<SettingsPage darkMode={darkMode} toggleDarkMode={toggleDarkMode} />} />
+          {/* Restore the ViewProfile route so users can see others' profiles */}
           <Route path="/viewprofile/:userId" element={<ViewProfile />} />
+          <Route path="/follow-requests" element={<FollowRequests currentUser={user} />} />
         </Routes>
       </Box>
     </Box>

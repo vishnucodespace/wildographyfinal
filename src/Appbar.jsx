@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Typography, IconButton, Tooltip, Box, Avatar } from '@mui/material';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Tooltip,
+  Box,
+  Avatar,
+} from '@mui/material';
 import { Brightness4 as Brightness4Icon, Brightness7 as Brightness7Icon } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -9,10 +17,21 @@ export default function Appbar({ toggleDarkMode, darkMode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch current user data from the backend API
     const fetchCurrentUser = async () => {
       try {
-        const response = await fetch('http://localhost:5174/api/users/current');
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("No token found");
+
+        const response = await fetch('http://localhost:5174/api/users/current', {
+          method: 'GET',
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) throw new Error(`Error: ${response.status}`);
+
         const data = await response.json();
         setCurrentUser(data);
       } catch (error) {
@@ -43,6 +62,7 @@ export default function Appbar({ toggleDarkMode, darkMode }) {
             fontFamily: '"Great Vibes", cursive',
             fontWeight: 'bold',
           }}
+          onClick={() => navigate("/")}
         >
           WildOgraphy
         </Typography>
@@ -58,7 +78,7 @@ export default function Appbar({ toggleDarkMode, darkMode }) {
             <motion.div whileHover={{ scale: 1.1 }}>
               <Tooltip title="Profile">
                 <IconButton color="inherit" onClick={handleProfileClick}>
-                  <Avatar src={currentUser.avatar} alt={currentUser.name} />
+                  <Avatar src={currentUser.avatar || "/default-avatar.png"} alt={currentUser.name} />
                 </IconButton>
               </Tooltip>
             </motion.div>

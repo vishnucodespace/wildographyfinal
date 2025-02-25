@@ -64,7 +64,7 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
   const posterUsername = localPost.username || "Unknown User";
 
   const handleProfileClick = () => {
-    navigate(`/viewprofile/${localPost.userId}`);
+    navigate(`/viewprofile/${localPost.userId}`,{ state: { currentUser } });
   };
 
   return (

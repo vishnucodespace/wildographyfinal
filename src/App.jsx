@@ -55,7 +55,7 @@ const App = () => {
     <ThemeProvider theme={theme(darkMode)}>
       <Routes>
         <Route
-          path="/"
+          path="/*"
           element={
             !user ? (
               <LoginPage setUser={setUser} />
@@ -80,7 +80,7 @@ const App = () => {
                 darkMode={darkMode}
               />
             ) : (
-              <Navigate to="/" />
+              <Navigate to="/*" />
             )
           }
         />

@@ -14,7 +14,7 @@ import {
   Divider,
   IconButton,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete'; // Added for trash icon
+import DeleteIcon from '@mui/icons-material/Delete';
 import PostDetailModal from './PostDetailModal';
 
 const ProfilePage = ({ user, setUser }) => {
@@ -22,7 +22,6 @@ const ProfilePage = ({ user, setUser }) => {
   const [editOpen, setEditOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedPost, setSelectedPost] = useState(null);
-
   const [editData, setEditData] = useState({
     username: user?.username || '',
     avatar: user?.avatar || '',
@@ -110,6 +109,7 @@ const ProfilePage = ({ user, setUser }) => {
     }
   };
 
+  // Button style (assuming blueButtonSx is a function that returns style object)
   const blueButtonSx = (theme) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#42a5f5' : '#1976d2',
     "&:hover": {
@@ -143,10 +143,10 @@ const ProfilePage = ({ user, setUser }) => {
                 Posts: {posts.length}
               </Button>
               <Button variant="contained" sx={blueButtonSx} size="small">
-                Followers: {user.followersCount || 0}
+                Followers: {user.followers ? user.followers.length : 0}
               </Button>
               <Button variant="contained" sx={blueButtonSx} size="small">
-                Following: {user.followingCount || 0}
+                Following: {user.following ? user.following.length : 0}
               </Button>
             </Box>
             <Box sx={{ mt: 1 }}>
@@ -183,7 +183,7 @@ const ProfilePage = ({ user, setUser }) => {
                   transition: 'transform 0.2s',
                   '&:hover': { transform: 'scale(1.02)' },
                   cursor: 'pointer',
-                  position: 'relative', // For absolute positioning of delete icon
+                  position: 'relative',
                 }}
                 onClick={() => setSelectedPost(post)}
               >

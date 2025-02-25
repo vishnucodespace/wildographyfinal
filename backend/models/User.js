@@ -1,3 +1,4 @@
+// models/User.js
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
@@ -6,8 +7,9 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   avatar: { type: String },
-  troop: { type: String, required: true } // New field for troop
+  troop: { type: String }, // e.g., "naturalist", "wildOgrapher"
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] }],
+  following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] }],
 }, { timestamps: true });
 
-// Force the collection name to be "logindetails"
 module.exports = mongoose.model('User', UserSchema, 'logindetails');
