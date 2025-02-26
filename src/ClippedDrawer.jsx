@@ -13,16 +13,16 @@ import {
   ListItemText,
   styled,
 } from '@mui/material';
+import { motion } from 'framer-motion';
 import HomeIcon from '@mui/icons-material/Home';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import PersonIcon from '@mui/icons-material/Person';
 import MailIcon from '@mui/icons-material/Mail';
 import ExploreIcon from '@mui/icons-material/Explore';
 import SearchIcon from '@mui/icons-material/Search';
-import CategoryIcon from '@mui/icons-material/Category';
 import NatureIcon from '@mui/icons-material/Nature';
 import SettingsIcon from '@mui/icons-material/Settings';
-import PersonAddIcon from '@mui/icons-material/PersonAdd'; // Icon for Follow Requests
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import HomeGrid from './HomeGrid';
 import ExplorePage from './ExplorePage';
 import ProfilePage from './ProfilePage';
@@ -41,11 +41,32 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
   '& .MuiDrawer-paper': {
     width: drawerWidth,
     boxSizing: 'border-box',
-    backgroundColor: theme.palette.background.paper,
-    color: theme.palette.text.primary,
-    borderRight: `1px solid ${theme.palette.divider}`,
+    backgroundColor: 'background.paper',
+    color: 'text.primary',
+    borderRight: (theme) => `1px solid ${theme.palette.divider}`,
+    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
   },
 }));
+
+// Animation variants for list items
+const itemVariants = {
+  rest: {
+    x: 0,
+    transition: {
+      type: 'spring',
+      stiffness: 300,
+      damping: 20,
+    },
+  },
+  hover: {
+    x: 8, // Slight shift right for floating effect
+    transition: {
+      type: 'spring',
+      stiffness: 300,
+      damping: 20,
+    },
+  },
+};
 
 export default function ClippedDrawer({ user, setUser, toggleDarkMode, darkMode }) {
   return (
@@ -56,7 +77,7 @@ export default function ClippedDrawer({ user, setUser, toggleDarkMode, darkMode 
 
       <StyledDrawer variant="permanent">
         <Toolbar />
-        <Box sx={{ overflowY: 'auto' }}>
+        <Box sx={{ overflowY: 'auto', py: 1 }}>
           <List>
             {[
               { text: 'Home', icon: <HomeIcon />, path: '/' },
@@ -66,74 +87,129 @@ export default function ClippedDrawer({ user, setUser, toggleDarkMode, darkMode 
               { text: 'Search People', icon: <SearchIcon />, path: '/searchpeople' },
               { text: 'Notifications', icon: <MailIcon />, path: '/notifications' },
             ].map(({ text, icon, path }) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton
-                  component={Link}
-                  to={path}
-                  sx={{
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    '&:hover': {
-                      backgroundColor: 'action.hover',
-                      transform: 'scale(1.05)',
-                    },
-                  }}
-                >
-                  <ListItemIcon sx={{ color: 'primary.main' }}>{icon}</ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
+              <motion.div
+                key={text}
+                variants={itemVariants}
+                initial="rest"
+                whileHover="hover"
+                animate="rest"
+              >
+                <ListItem disablePadding>
+                  <ListItemButton
+                    component={Link}
+                    to={path}
+                    sx={{
+                      py: 1.5,
+                      px: 3,
+                      color: 'text.primary',
+                      '&:hover': {
+                        backgroundColor: 'action.hover',
+                        '& .MuiListItemIcon-root': {
+                          color: 'primary.main',
+                        },
+                      },
+                      transition: 'background-color 0.2s ease',
+                    }}
+                  >
+                    <ListItemIcon sx={{ color: 'text.secondary', minWidth: 48 }}>{icon}</ListItemIcon>
+                    <ListItemText
+                      primary={text}
+                      primaryTypographyProps={{
+                        fontWeight: 500,
+                        fontSize: '1rem',
+                        fontFamily: '"Poppins", sans-serif',
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              </motion.div>
             ))}
           </List>
-          <Divider />
-          {/* Replacing Categories with Follow Requests */}
+          <Divider sx={{ my: 1, bgcolor: 'divider' }} />
           <List>
             {[
               { text: 'Follow Requests', icon: <PersonAddIcon />, path: '/follow-requests' },
               { text: 'Conservation', icon: <NatureIcon />, path: '/conservation' },
             ].map(({ text, icon, path }) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton
-                  component={Link}
-                  to={path}
-                  sx={{
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    '&:hover': {
-                      backgroundColor: 'action.hover',
-                      transform: 'scale(1.05)',
-                    },
-                  }}
-                >
-                  <ListItemIcon sx={{ color: 'primary.main' }}>{icon}</ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
+              <motion.div
+                key={text}
+                variants={itemVariants}
+                initial="rest"
+                whileHover="hover"
+                animate="rest"
+              >
+                <ListItem disablePadding>
+                  <ListItemButton
+                    component={Link}
+                    to={path}
+                    sx={{
+                      py: 1.5,
+                      px: 3,
+                      color: 'text.primary',
+                      '&:hover': {
+                        backgroundColor: 'action.hover',
+                        '& .MuiListItemIcon-root': {
+                          color: 'primary.main',
+                        },
+                      },
+                      transition: 'background-color 0.2s ease',
+                    }}
+                  >
+                    <ListItemIcon sx={{ color: 'text.secondary', minWidth: 48 }}>{icon}</ListItemIcon>
+                    <ListItemText
+                      primary={text}
+                      primaryTypographyProps={{
+                        fontWeight: 500,
+                        fontSize: '1rem',
+                        fontFamily: '"Poppins", sans-serif',
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              </motion.div>
             ))}
           </List>
-          <Divider />
+          <Divider sx={{ my: 1, bgcolor: 'divider' }} />
           <List>
-            <ListItem disablePadding>
-              <ListItemButton
-                component={Link}
-                to="/settings"
-                sx={{
-                  textDecoration: 'none',
-                  color: 'inherit',
-                  '&:hover': {
-                    backgroundColor: 'action.hover',
-                    transform: 'scale(1.05)',
-                  },
-                }}
-              >
-                <ListItemIcon sx={{ color: 'primary.main' }}>
-                  <SettingsIcon />
-                </ListItemIcon>
-                <ListItemText primary="Settings" />
-              </ListItemButton>
-            </ListItem>
+            <motion.div
+              variants={itemVariants}
+              initial="rest"
+              whileHover="hover"
+              animate="rest"
+            >
+              <ListItem disablePadding>
+                <ListItemButton
+                  component={Link}
+                  to="/settings"
+                  sx={{
+                    py: 1.5,
+                    px: 3,
+                    color: 'text.primary',
+                    '&:hover': {
+                      backgroundColor: 'action.hover',
+                      '& .MuiListItemIcon-root': {
+                        color: 'primary.main',
+                      },
+                    },
+                    transition: 'background-color 0.2s ease',
+                  }}
+                >
+                  <ListItemIcon sx={{ color: 'text.secondary', minWidth: 48 }}>
+                    <SettingsIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Settings"
+                    primaryTypographyProps={{
+                      fontWeight: 500,
+                      fontSize: '1rem',
+                      fontFamily: '"Poppins", sans-serif',
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            </motion.div>
           </List>
-          <Divider />
+          <Divider sx={{ my: 1, bgcolor: 'divider' }} />
         </Box>
       </StyledDrawer>
 
@@ -146,18 +222,18 @@ export default function ClippedDrawer({ user, setUser, toggleDarkMode, darkMode 
           ml: `${drawerWidth}px`,
           height: 'calc(100vh - 64px)',
           overflowY: 'auto',
+          bgcolor: 'background.default',
         }}
       >
         <Routes>
           <Route path="/" element={<HomeGrid currentUser={user} />} />
           <Route path="/explore" element={<ExplorePage currentUser={user} />} />
-          <Route path="/upload" element={<UploadPostPage />} />
+          <Route path="/upload" element={<UploadPostPage user={user} />} />
           <Route path="/profile" element={<ProfilePage user={user} setUser={setUser} />} />
           <Route path="/searchpeople" element={<SearchPeoplePage />} />
           <Route path="/notifications" element={<Notifications currentUser={user} />} />
           <Route path="/conservation" element={<ConservationPage />} />
-          <Route path="/settings" element={<SettingsPage darkMode={darkMode} toggleDarkMode={toggleDarkMode} />} />
-          {/* Restore the ViewProfile route so users can see others' profiles */}
+          <Route path="/settings" element={<SettingsPage darkMode={darkMode} toggleDarkMode={toggleDarkMode} currentUser={user} />} />
           <Route path="/viewprofile/:userId" element={<ViewProfile />} />
           <Route path="/follow-requests" element={<FollowRequests currentUser={user} />} />
         </Routes>

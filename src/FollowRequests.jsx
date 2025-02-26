@@ -5,8 +5,25 @@ import {
   ListItem, 
   ListItemText, 
   Button, 
-  Typography 
+  Typography,
+  Box,
 } from '@mui/material';
+import { motion } from 'framer-motion';
+
+// Animation variants
+const listItemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { duration: 0.3, ease: 'easeOut' },
+  },
+};
+
+const buttonVariants = {
+  hover: { scale: 1.05, transition: { duration: 0.2 } },
+  tap: { scale: 0.95 },
+};
 
 const FollowRequests = ({ currentUser }) => {
   const [requests, setRequests] = useState([]);
@@ -49,7 +66,6 @@ const FollowRequests = ({ currentUser }) => {
       });
       const data = await response.json();
       if (response.ok) {
-        // Remove the accepted request from the list
         setRequests(prev => prev.filter(r => r.fromUser !== requesterId));
       } else {
         console.error('Error accepting follow request:', data.error);
@@ -92,7 +108,6 @@ const FollowRequests = ({ currentUser }) => {
       });
       const data = await response.json();
       if (response.ok) {
-        // Optionally, remove the request or update its status as needed
         setRequests(prev => prev.filter(r => r.fromUser !== requesterId));
       } else {
         console.error('Error following back:', data.error);
@@ -103,45 +118,142 @@ const FollowRequests = ({ currentUser }) => {
   };
 
   return (
-    <Container sx={{ mt: 4 }}>
-      <Typography variant="h5" gutterBottom>
+    <Container 
+      sx={{ 
+        mt: 6, 
+        bgcolor: 'background.default', 
+        minHeight: '100vh', 
+        py: 4 
+      }}
+    >
+      <Typography 
+        variant="h5" 
+        gutterBottom
+        sx={{
+          fontWeight: 600,
+          color: 'text.primary',
+          position: 'relative',
+          mb: 4,
+          '&:after': {
+            content: '""',
+            position: 'absolute',
+            bottom: -8,
+            left: 0,
+            width: 50,
+            height: 3,
+            bgcolor: 'primary.main',
+            borderRadius: 2,
+          },
+        }}
+      >
         Follow Requests
       </Typography>
       {requests.length === 0 ? (
-        <Typography variant="body2" color="text.secondary">
+        <Typography 
+          variant="body1" 
+          sx={{ 
+            color: 'text.secondary', 
+            textAlign: 'center',
+            bgcolor: 'background.paper',
+            py: 2,
+            borderRadius: 2,
+            fontStyle: 'italic',
+          }}
+        >
           No follow requests.
         </Typography>
       ) : (
-        <List>
+        <List sx={{ bgcolor: 'background.paper', borderRadius: 3, boxShadow: '0 4px 16px rgba(0,0,0,0.05)' }}>
           {requests.map((request) => (
-            <ListItem key={request._id} divider>
-              <ListItemText 
-                primary={request.message} 
-                secondary={`From User ID: ${request.fromUser}`}
-              />
-              <Button 
-                variant="contained" 
-                color="primary" 
-                onClick={() => handleAccept(request.fromUser)}
+            <motion.div
+              key={request._id}
+              variants={listItemVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <ListItem 
+                divider
+                sx={{ 
+                  py: 2,
+                  '&:hover': { bgcolor: 'background.default' },
+                  transition: 'background-color 0.2s',
+                }}
               >
-                Accept
-              </Button>
-              <Button 
-                variant="outlined" 
-                color="error" 
-                sx={{ ml: 1 }} 
-                onClick={() => handleReject(request.fromUser)}
-              >
-                Reject
-              </Button>
-              <Button 
-                variant="outlined" 
-                sx={{ ml: 1 }} 
-                onClick={() => handleFollowBack(request.fromUser)}
-              >
-                Follow Back
-              </Button>
-            </ListItem>
+                <ListItemText 
+                  primary={request.message} 
+                  secondary={`From User ID: ${request.fromUser}`}
+                  primaryTypographyProps={{ variant: 'body1', fontWeight: 500, color: 'text.primary' }}
+                  secondaryTypographyProps={{ color: 'text.secondary' }}
+                />
+                <Box sx={{ display: 'flex', gap: 1, ml: 2 }}>
+                  <Button 
+                    variant="contained" 
+                    color="primary"
+                    component={motion.button}
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                    sx={{
+                      borderRadius: 2,
+                      px: 2,
+                      py: 0.5,
+                      textTransform: 'none',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                      '&:hover': {
+                        bgcolor: 'primary.dark',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                      },
+                    }}
+                    onClick={() => handleAccept(request.fromUser)}
+                  >
+                    Accept
+                  </Button>
+                  <Button 
+                    variant="outlined" 
+                    color="error"
+                    component={motion.button}
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                    sx={{ 
+                      borderRadius: 2,
+                      px: 2,
+                      py: 0.5,
+                      textTransform: 'none',
+                      '&:hover': {
+                        bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(239,68,68,0.1)' : '#fef2f2',
+                        borderColor: 'error.dark',
+                      },
+                    }}
+                    onClick={() => handleReject(request.fromUser)}
+                  >
+                    Reject
+                  </Button>
+                  <Button 
+                    variant="outlined" 
+                    component={motion.button}
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                    sx={{ 
+                      borderRadius: 2,
+                      px: 2,
+                      py: 0.5,
+                      textTransform: 'none',
+                      borderColor: 'primary.main',
+                      color: 'primary.main',
+                      '&:hover': {
+                        bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(66,165,245,0.1)' : '#f0f7ff',
+                        borderColor: 'primary.dark',
+                      },
+                    }}
+                    onClick={() => handleFollowBack(request.fromUser)}
+                  >
+                    Follow Back
+                  </Button>
+                </Box>
+              </ListItem>
+            </motion.div>
           ))}
         </List>
       )}

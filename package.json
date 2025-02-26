@@ -15,7 +15,7 @@
     "@mui/lab": "^5.0.0-alpha.124",
     "@mui/material": "^6.4.3",
     "animate.css": "^4.1.1",
-    "framer-motion": "^7.6.8",
+    "framer-motion": "^7.10.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.1",

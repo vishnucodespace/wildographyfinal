@@ -19,59 +19,59 @@ import {
 import { motion } from 'framer-motion';
 import 'animate.css';
 
-// Refined nature-inspired theme variables
-const accentColor = "#DAA520"; // Deeper gold for sophistication
-const bgColor = "#F5F5DC";     // Muted earthy beige
-const textColor = "#3E2723";   // Dark brown for contrast
+// Color scheme: forest green, soft sand, and ivory
+const accentColor = "#2E7D32";  // Deep forest green
+const bgColor = "#F9E4B7";      // Soft sand/ivory
+const textColor = "#1B3C34";    // Dark teal for contrast
+const secondaryColor = "#FFF8E7"; // Light ivory for backgrounds
 
-// Array of quotes for typewriter effect
+// Array of quotes with enhanced typewriter effect
 const quotesArray = [
-  "The Earth is what we all have in common. – Wendell Berry",
-  "The greatest threat to our planet is the belief that someone else will save it. – Robert Swan",
-  "Nature always wears the colors of the spirit. – Ralph Waldo Emerson",
-  "In nature, nothing exists alone. – Rachel Carson",
+  "The clearest way into the Universe is through a forest wilderness. – John Muir",
+  "We do not inherit the earth from our ancestors; we borrow it from our children. – Native American Proverb",
+  "The earth has music for those who listen. – George Santayana",
+  "Look deep into nature, and then you will understand everything better. – Albert Einstein",
 ];
 
-// Articles for the Conservation section
+// Real conservation stories with links
 const articles = [
   {
     id: 1,
-    title: "The Last Stand of the Coral Reefs",
-    image: "https://images.pexels.com/photos/158607/corals-reef-ocean-sea-158607.jpeg?auto=compress&cs=tinysrgb",
-    description: "Marine conservationists fight to restore coral reefs, fragile ecosystems teeming with life, now fading under climate pressures.",
+    title: "Saving the Great Barrier Reef",
+    image: "https://images.unsplash.com/photo-1624453125687-f6c3cfcd3d9f?auto=format&fit=crop&w=800",
+    description: "Efforts to combat coral bleaching and restore Australia's Great Barrier Reef, a critical ecosystem under threat.",
+    link: "https://www.worldwildlife.org/stories/saving-the-great-barrier-reef",
   },
   {
     id: 2,
-    title: "The Silent Deforestation Crisis",
-    image: "https://images.pexels.com/photos/3408744/pexels-photo-3408744.jpeg?auto=compress&cs=tinysrgb",
-    description: "Forests vanish at alarming rates, displacing wildlife and warming our planet. Every tree lost is a story erased.",
+    title: "Amazon Rainforest Conservation",
+    image: "https://images.unsplash.com/photo-1501466044931-62695aada8ec?auto=format&fit=crop&w=800",
+    description: "Initiatives to halt deforestation in the Amazon, protecting biodiversity and indigenous communities.",
+    link: "https://www.rainforestfoundation.org/amazon-rainforest-conservation/",
   },
   {
     id: 3,
-    title: "A Rhino’s Tale of Survival",
-    image: "https://images.pexels.com/photos/33109/fantasy-forest-trees-mist.jpg?auto=compress&cs=tinysrgb",
-    description: "One rhino’s journey through a reforested sanctuary reflects hope amid the battle against poaching and habitat loss.",
+    title: "Rhino Recovery in Africa",
+    image: "https://images.unsplash.com/photo-1581852016528-ffbdf489dbfe?auto=format&fit=crop&w=800",
+    description: "Conservation programs boosting rhino populations in Africa through anti-poaching and habitat restoration.",
+    link: "https://www.savetherhino.org/africa/",
   },
 ];
 
 const LoginPage = ({ setUser }) => {
   const [tabIndex, setTabIndex] = useState(0);
-  // Login form states
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-  // Sign Up form states
   const [signUpName, setSignUpName] = useState('');
   const [signUpUsername, setSignUpUsername] = useState('');
   const [signUpTroop, setSignUpTroop] = useState('wildOgrapher');
   const [signUpEmail, setSignUpEmail] = useState('');
   const [signUpPassword, setSignUpPassword] = useState('');
-  // Error message state
   const [errorMessage, setErrorMessage] = useState("");
-
-  // Typewriter effect states
   const [typedQuote, setTypedQuote] = useState("");
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
+  const [isTyping, setIsTyping] = useState(true);
 
   const handleTabChange = (event, newValue) => {
     setTabIndex(newValue);
@@ -119,7 +119,6 @@ const LoginPage = ({ setUser }) => {
       });
       const data = await response.json();
       if (response.ok) {
-        // Save token and user data
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         setUser(data.user);
@@ -131,28 +130,30 @@ const LoginPage = ({ setUser }) => {
       setErrorMessage("Error signing up. Please try again later.");
     }
   };
-  
-  // Typewriter effect for quotes
+
+  // Enhanced typewriter effect
   useEffect(() => {
     let timer;
     const currentQuote = quotesArray[currentQuoteIndex];
-    if (charIndex < currentQuote.length) {
+    if (isTyping && charIndex < currentQuote.length) {
       timer = setTimeout(() => {
         setTypedQuote((prev) => prev + currentQuote.charAt(charIndex));
         setCharIndex(charIndex + 1);
-      }, 100);
-    } else {
+      }, 80);
+    } else if (charIndex === currentQuote.length) {
+      setIsTyping(false);
       timer = setTimeout(() => {
+        setIsTyping(true);
         setTypedQuote("");
         setCharIndex(0);
         setCurrentQuoteIndex((currentQuoteIndex + 1) % quotesArray.length);
-      }, 2000);
+      }, 3000);
     }
     return () => clearTimeout(timer);
-  }, [charIndex, currentQuoteIndex]);
+  }, [charIndex, currentQuoteIndex, isTyping]);
 
   const loginForm = (
-    <Box component="form" noValidate sx={{ mt: 2 }} onSubmit={handleLogin}>
+    <Box component="form" noValidate sx={{ mt: 3 }} onSubmit={handleLogin}>
       <TextField
         label="Email"
         fullWidth
@@ -161,8 +162,16 @@ const LoginPage = ({ setUser }) => {
         required
         value={loginEmail}
         onChange={(e) => setLoginEmail(e.target.value)}
-        InputProps={{ sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor } }}
-        InputLabelProps={{ sx: { color: textColor } }}
+        InputProps={{
+          sx: {
+            backgroundColor: secondaryColor,
+            color: textColor,
+            borderRadius: 2,
+            '& fieldset': { borderColor: accentColor },
+          },
+        }}
+        InputLabelProps={{ sx: { color: textColor, fontWeight: 'bold' } }}
+        sx={{ '&:hover fieldset': { borderColor: accentColor } }}
       />
       <TextField
         label="Password"
@@ -173,25 +182,42 @@ const LoginPage = ({ setUser }) => {
         required
         value={loginPassword}
         onChange={(e) => setLoginPassword(e.target.value)}
-        InputProps={{ sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor } }}
-        InputLabelProps={{ sx: { color: textColor } }}
+        InputProps={{
+          sx: {
+            backgroundColor: secondaryColor,
+            color: textColor,
+            borderRadius: 2,
+            '& fieldset': { borderColor: accentColor },
+          },
+        }}
+        InputLabelProps={{ sx: { color: textColor, fontWeight: 'bold' } }}
+        sx={{ '&:hover fieldset': { borderColor: accentColor } }}
       />
       <Button
         type="submit"
         variant="contained"
         fullWidth
         sx={{
-          mt: 2,
+          mt: 3,
+          py: 1.5,
           backgroundColor: accentColor,
-          color: textColor,
+          color: secondaryColor,
           fontWeight: 'bold',
-          '&:hover': { backgroundColor: "#FFC107" },
+          fontSize: '1.1rem',
+          borderRadius: 2,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+          '&:hover': {
+            backgroundColor: "#1B5E20",
+            boxShadow: '0 6px 16px rgba(0,0,0,0.3)',
+            transform: 'translateY(-2px)',
+          },
+          transition: 'all 0.3s ease',
         }}
       >
         Login
       </Button>
       {errorMessage && (
-        <Typography variant="body2" sx={{ mt: 2, color: "red" }}>
+        <Typography variant="body2" sx={{ mt: 2, color: "#D32F2F", fontStyle: 'italic' }}>
           {errorMessage}
         </Typography>
       )}
@@ -199,7 +225,7 @@ const LoginPage = ({ setUser }) => {
   );
 
   const signUpForm = (
-    <Box component="form" noValidate sx={{ mt: 2 }} onSubmit={handleSignUp}>
+    <Box component="form" noValidate sx={{ mt: 3 }} onSubmit={handleSignUp}>
       <TextField
         label="Name"
         fullWidth
@@ -208,18 +234,33 @@ const LoginPage = ({ setUser }) => {
         required
         value={signUpName}
         onChange={(e) => setSignUpName(e.target.value)}
-        InputProps={{ sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor } }}
-        InputLabelProps={{ sx: { color: textColor } }}
+        InputProps={{
+          sx: {
+            backgroundColor: secondaryColor,
+            color: textColor,
+            borderRadius: 2,
+            '& fieldset': { borderColor: accentColor },
+          },
+        }}
+        InputLabelProps={{ sx: { color: textColor, fontWeight: 'bold' } }}
+        sx={{ '&:hover fieldset': { borderColor: accentColor } }}
       />
       <FormControl fullWidth margin="normal" variant="outlined" required>
-        <InputLabel id="troop-select-label" sx={{ color: textColor }}>Troop</InputLabel>
+        <InputLabel id="troop-select-label" sx={{ color: textColor, fontWeight: 'bold' }}>
+          Troop
+        </InputLabel>
         <Select
           labelId="troop-select-label"
           id="troop-select"
           value={signUpTroop}
           label="Troop"
           onChange={(e) => setSignUpTroop(e.target.value)}
-          sx={{ backgroundColor: "rgba(255,255,255,0.9)", color: textColor }}
+          sx={{
+            backgroundColor: secondaryColor,
+            color: textColor,
+            borderRadius: 2,
+            '& fieldset': { borderColor: accentColor },
+          }}
         >
           <MenuItem value="wildOgrapher">WildOgrapher</MenuItem>
           <MenuItem value="naturalist">Naturalist</MenuItem>
@@ -233,8 +274,16 @@ const LoginPage = ({ setUser }) => {
         required
         value={signUpUsername}
         onChange={(e) => setSignUpUsername(e.target.value)}
-        InputProps={{ sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor } }}
-        InputLabelProps={{ sx: { color: textColor } }}
+        InputProps={{
+          sx: {
+            backgroundColor: secondaryColor,
+            color: textColor,
+            borderRadius: 2,
+            '& fieldset': { borderColor: accentColor },
+          },
+        }}
+        InputLabelProps={{ sx: { color: textColor, fontWeight: 'bold' } }}
+        sx={{ '&:hover fieldset': { borderColor: accentColor } }}
       />
       <TextField
         label="Email"
@@ -244,8 +293,16 @@ const LoginPage = ({ setUser }) => {
         required
         value={signUpEmail}
         onChange={(e) => setSignUpEmail(e.target.value)}
-        InputProps={{ sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor } }}
-        InputLabelProps={{ sx: { color: textColor } }}
+        InputProps={{
+          sx: {
+            backgroundColor: secondaryColor,
+            color: textColor,
+            borderRadius: 2,
+            '& fieldset': { borderColor: accentColor },
+          },
+        }}
+        InputLabelProps={{ sx: { color: textColor, fontWeight: 'bold' } }}
+        sx={{ '&:hover fieldset': { borderColor: accentColor } }}
       />
       <TextField
         label="Password"
@@ -256,25 +313,42 @@ const LoginPage = ({ setUser }) => {
         required
         value={signUpPassword}
         onChange={(e) => setSignUpPassword(e.target.value)}
-        InputProps={{ sx: { backgroundColor: "rgba(255,255,255,0.9)", color: textColor } }}
-        InputLabelProps={{ sx: { color: textColor } }}
+        InputProps={{
+          sx: {
+            backgroundColor: secondaryColor,
+            color: textColor,
+            borderRadius: 2,
+            '& fieldset': { borderColor: accentColor },
+          },
+        }}
+        InputLabelProps={{ sx: { color: textColor, fontWeight: 'bold' } }}
+        sx={{ '&:hover fieldset': { borderColor: accentColor } }}
       />
       <Button
         type="submit"
         variant="contained"
         fullWidth
         sx={{
-          mt: 2,
+          mt: 3,
+          py: 1.5,
           backgroundColor: accentColor,
-          color: textColor,
+          color: secondaryColor,
           fontWeight: 'bold',
-          '&:hover': { backgroundColor: "#FFC107" },
+          fontSize: '1.1rem',
+          borderRadius: 2,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+          '&:hover': {
+            backgroundColor: "#1B5E20",
+            boxShadow: '0 6px 16px rgba(0,0,0,0.3)',
+            transform: 'translateY(-2px)',
+          },
+          transition: 'all 0.3s ease',
         }}
       >
         Sign Up
       </Button>
       {errorMessage && (
-        <Typography variant="body2" sx={{ mt: 2, color: "red" }}>
+        <Typography variant="body2" sx={{ mt: 2, color: "#D32F2F", fontStyle: 'italic' }}>
           {errorMessage}
         </Typography>
       )}
@@ -290,26 +364,25 @@ const LoginPage = ({ setUser }) => {
           width: '100vw',
           minHeight: '100vh',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          backgroundImage: 'url(https://images.pexels.com/photos/47547/forest-trees-path-wilderness-47547.jpeg?auto=compress&cs=tinysrgb)',
+          justifyContent: 'space-between',
+          backgroundImage: 'url(https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundAttachment: 'fixed',
-        }}
-      >
-        {/* Overlay */}
-        <Box
-          sx={{
+          '&:before': {
+            content: '""',
             position: 'absolute',
             top: 0,
             left: 0,
             width: '100%',
             height: '100%',
-            backgroundColor: 'rgba(0,0,0,0.5)',
+            background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.5))',
             zIndex: 1,
-          }}
-        />
+          },
+        }}
+      >
         {/* Login/Sign Up Container */}
         <Box
           sx={{
@@ -320,82 +393,130 @@ const LoginPage = ({ setUser }) => {
             alignItems: 'center',
             justifyContent: 'center',
             width: '100%',
-            maxWidth: 400,
+            maxWidth: 450,
             p: 4,
+            mt: 8,
           }}
         >
           <motion.div
-            initial={{ opacity: 0, y: -30 }}
+            initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 1, ease: 'easeOut' }}
           >
             <Typography
               variant="h2"
               align="center"
               sx={{
-                mb: 3,
-                color: '#fff',
-                fontFamily: '"Playfair Display", serif',
+                mb: 4,
+                color: secondaryColor,
+                fontFamily: '"Dancing Script", cursive', // Cursive font for title
+                fontWeight: '700',
+                fontSize: { xs: '2.5rem', md: '3.5rem' }, // Responsive size
+                textShadow: '2px 2px 8px rgba(0,0,0,0.6)',
+                letterSpacing: '2px',
               }}
             >
               Wildography
             </Typography>
           </motion.div>
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
           >
             <Paper
-              elevation={12}
+              elevation={16}
               sx={{
                 p: 4,
-                borderRadius: 2,
-                backgroundColor: "rgba(255,255,255,0.9)",
-                border: `2px solid ${accentColor}`,
+                borderRadius: 3,
+                backgroundColor: "rgba(255,248,231,0.95)",
+                border: `3px solid ${accentColor}`,
+                boxShadow: `0 8px 24px rgba(0,0,0,0.25)`,
               }}
             >
-              <Tabs value={tabIndex} onChange={handleTabChange} centered>
+              <Tabs
+                value={tabIndex}
+                onChange={handleTabChange}
+                centered
+                sx={{
+                  mb: 2,
+                  '& .MuiTab-root': {
+                    color: textColor,
+                    fontWeight: 'bold',
+                    fontSize: '1.1rem',
+                    textTransform: 'none',
+                    fontFamily: '"Playfair Display", serif',
+                  },
+                  '& .Mui-selected': {
+                    color: accentColor,
+                  },
+                  '& .MuiTabs-indicator': {
+                    backgroundColor: accentColor,
+                    height: 3,
+                  },
+                }}
+              >
                 <Tab label="Login" />
                 <Tab label="Sign Up" />
               </Tabs>
               {tabIndex === 0 ? loginForm : signUpForm}
-              <Typography variant="body2" align="center" sx={{ mt: 2, color: textColor }}>
+              <Typography
+                variant="body2"
+                align="center"
+                sx={{
+                  mt: 3,
+                  color: textColor,
+                  fontStyle: 'italic',
+                  fontFamily: '"Playfair Display", serif',
+                }}
+              >
                 Join us in preserving the wonders of wildlife.
               </Typography>
             </Paper>
           </motion.div>
-          {/* Typewriter Quote */}
-          <Box
+        </Box>
+        {/* Typewriter Quote */}
+        <Box
+          sx={{
+            position: 'relative',
+            zIndex: 2,
+            width: '100%',
+            textAlign: 'center',
+            pb: 4,
+          }}
+        >
+          <Typography
+            variant="h6"
             sx={{
-              position: 'absolute',
-              bottom: '5%',
-              width: '100%',
-              textAlign: 'center',
-              zIndex: 2,
+              color: secondaryColor,
+              fontFamily: '"Dancing Script", cursive', // Cursive font for quotes
+              fontWeight: '400',
+              fontSize: { xs: '1.2rem', md: '1.5rem' }, // Responsive size
+              textShadow: '1px 1px 6px rgba(0,0,0,0.7)',
+              px: 2,
+              maxWidth: '80%',
+              mx: 'auto',
+              animation: 'pulse 2s infinite',
             }}
           >
-            <Typography
-              variant="h6"
-              sx={{
-                color: '#fff',
-                fontFamily: '"Playfair Display", serif',
-                fontStyle: 'italic',
-              }}
-            >
-              {typedQuote}
-            </Typography>
-          </Box>
+            {typedQuote}
+          </Typography>
         </Box>
       </Box>
 
       {/* Conservation & Wildlife Stories Section */}
-      <Box sx={{ p: 4, backgroundColor: bgColor }}>
+      <Box sx={{ p: { xs: 4, md: 6 }, backgroundColor: bgColor }}>
         <Typography
           variant="h4"
           align="center"
           gutterBottom
-          sx={{ fontWeight: 'bold', color: accentColor, fontFamily: '"Playfair Display", serif' }}
+          sx={{
+            fontWeight: 'bold',
+            color: accentColor,
+            fontFamily: '"Playfair Display", serif',
+            textShadow: '1px 1px 4px rgba(0,0,0,0.2)',
+            mb: 5,
+          }}
         >
           Stories of the Wild
         </Typography>
@@ -406,37 +527,68 @@ const LoginPage = ({ setUser }) => {
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
+                transition={{ duration: 0.8, delay: index * 0.2, ease: 'easeOut' }}
               >
                 <Card
                   sx={{
-                    borderRadius: 2,
-                    boxShadow: `0 4px 8px rgba(0,0,0,0.2)`,
+                    borderRadius: 3,
+                    boxShadow: `0 6px 20px rgba(0,0,0,0.15)`,
+                    backgroundColor: secondaryColor,
+                    overflow: 'hidden',
                     '&:hover': {
                       transform: 'scale(1.05)',
-                      transition: 'transform 0.3s ease-in-out',
+                      boxShadow: `0 12px 30px rgba(0,0,0,0.25)`,
+                      transition: 'all 0.3s ease-in-out',
                     },
                   }}
                 >
                   <CardMedia
                     component="img"
-                    height="200"
+                    height="220"
                     image={article.image}
                     alt={article.title}
+                    sx={{
+                      objectFit: 'cover',
+                      transition: 'transform 0.5s ease',
+                      '&:hover': { transform: 'scale(1.1)' },
+                    }}
                   />
-                  <CardContent>
-                    <Typography variant="h5" sx={{ mb: 1, color: accentColor, fontWeight: 'bold' }}>
+                  <CardContent sx={{ p: 3 }}>
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        mb: 2,
+                        color: accentColor,
+                        fontWeight: 'bold',
+                        fontFamily: '"Playfair Display", serif',
+                      }}
+                    >
                       {article.title}
                     </Typography>
-                    <Typography variant="body2" sx={{ mb: 1, color: textColor }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ mb: 2, color: textColor, lineHeight: 1.6 }}
+                    >
                       {article.description}
                     </Typography>
                     <Button
                       variant="outlined"
-                      sx={{ mt: 2, color: accentColor, borderColor: accentColor }}
-                      onClick={() => {
-                        // Placeholder for future modal or navigation
-                        console.log(`Read more about ${article.title}`);
+                      href={article.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      sx={{
+                        mt: 2,
+                        color: accentColor,
+                        borderColor: accentColor,
+                        borderRadius: 2,
+                        fontWeight: 'bold',
+                        px: 3,
+                        '&:hover': {
+                          backgroundColor: accentColor,
+                          color: secondaryColor,
+                          borderColor: accentColor,
+                        },
+                        transition: 'all 0.3s ease',
                       }}
                     >
                       Read More
@@ -453,17 +605,29 @@ const LoginPage = ({ setUser }) => {
       <Box
         sx={{
           backgroundColor: accentColor,
-          color: '#fff',
+          color: secondaryColor,
           py: 4,
           textAlign: 'center',
+          borderTop: `4px solid ${bgColor}`,
         }}
       >
-        <Typography variant="body2">
+        <Typography
+          variant="body2"
+          sx={{ fontFamily: '"Playfair Display", serif', mb: 1 }}
+        >
           © {new Date().getFullYear()} Wildography. All rights reserved.
         </Typography>
-        <Typography variant="body2">
+        <Typography variant="body2" sx={{ fontFamily: '"Playfair Display", serif' }}>
           Follow us on{' '}
-          <a href="#" style={{ color: '#fff', textDecoration: 'none' }}>
+          <a
+            href="#"
+            style={{
+              color: bgColor,
+              textDecoration: 'none',
+              fontWeight: 'bold',
+              '&:hover': { textDecoration: 'underline' },
+            }}
+          >
             Social Media
           </a>
         </Typography>

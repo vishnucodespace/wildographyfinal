@@ -192,65 +192,136 @@ const ProfilePage = ({ user, setUser }) => {
     }
   };
 
-  const blueButtonSx = (theme) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#42a5f5' : '#1976d2',
-    '&:hover': {
-      backgroundColor: theme.palette.mode === 'dark' ? '#1976d2' : '#115293',
-    },
+  const blueButtonSx = {
+    bgcolor: 'primary.main',
+    color: 'primary.contrastText',
+    borderRadius: 2,
+    padding: '8px 16px',
     textTransform: 'none',
-  });
+    fontWeight: 500,
+    boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+    '&:hover': {
+      bgcolor: 'primary.dark',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+    },
+    transition: 'all 0.2s ease',
+  };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth="md" sx={{ mt: 6, mb: 6 }}>
       <Paper
         elevation={3}
         sx={{
           p: 4,
           mb: 4,
           borderRadius: 3,
+          bgcolor: 'background.paper',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+          '&:hover': {
+            boxShadow: '0 6px 24px rgba(0,0,0,0.08)',
+          },
+          transition: 'box-shadow 0.3s ease',
           position: 'relative',
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: { xs: 'column', sm: 'row' } }}>
           <Avatar
             src={user.avatar}
-            sx={{ width: 120, height: 120, mr: 3, border: '3px solid', borderColor: 'grey.200' }}
+            sx={{ 
+              width: { xs: 100, sm: 120 }, 
+              height: { xs: 100, sm: 120 }, 
+              mr: { sm: 3 }, 
+              mb: { xs: 2, sm: 0 },
+              border: (theme) => `3px solid ${theme.palette.divider}`,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            }}
           />
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+          <Box sx={{ flex: 1, textAlign: { xs: 'center', sm: 'left' } }}>
+            <Typography 
+              variant="h4" 
+              sx={{ 
+                fontWeight: 600, 
+                color: 'text.primary',
+                mb: 2 
+              }}
+            >
               {user.username || 'Not set'}
             </Typography>
-            <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: { xs: 'center', sm: 'flex-start' }, flexWrap: 'wrap' }}>
               <Button variant="contained" sx={blueButtonSx} size="small">
                 Posts: {posts.length}
               </Button>
-              <Button variant="contained" sx={blueButtonSx} size="small" onClick={() => setOpenFollowers(true)}>
+              <Button 
+                variant="contained" 
+                sx={blueButtonSx} 
+                size="small" 
+                onClick={() => setOpenFollowers(true)}
+              >
                 Followers: {user.followers ? user.followers.length : 0}
               </Button>
-              <Button variant="contained" sx={blueButtonSx} size="small" onClick={() => setOpenFollowing(true)}>
+              <Button 
+                variant="contained" 
+                sx={blueButtonSx} 
+                size="small" 
+                onClick={() => setOpenFollowing(true)}
+              >
                 Following: {user.following ? user.following.length : 0}
               </Button>
             </Box>
-            <Box sx={{ mt: 1 }}>
-              <Typography variant="body1" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+            <Box sx={{ mt: 2 }}>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  fontWeight: 500, 
+                  color: 'primary.main',
+                  letterSpacing: '0.2px' 
+                }}
+              >
                 Troop: {user.troop}
               </Typography>
             </Box>
             <Box sx={{ mt: 2 }}>
-              <Button variant="contained" sx={blueButtonSx} size="medium" onClick={handleEditOpen}>
+              <Button 
+                variant="contained" 
+                sx={blueButtonSx} 
+                size="medium" 
+                onClick={handleEditOpen}
+              >
                 Edit Profile
               </Button>
             </Box>
           </Box>
-          <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
-            <Button variant="contained" sx={blueButtonSx} size="small" onClick={handleLogout}>
+          <Box sx={{ position: { sm: 'absolute' }, top: { sm: 16 }, right: { sm: 16 }, mt: { xs: 2, sm: 0 } }}>
+            <Button 
+              variant="contained" 
+              sx={blueButtonSx} 
+              size="small" 
+              onClick={handleLogout}
+            >
               Logout
             </Button>
           </Box>
         </Box>
       </Paper>
 
-      <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
+      <Typography 
+        variant="h6" 
+        sx={{ 
+          mb: 3, 
+          fontWeight: 600, 
+          color: 'text.primary',
+          position: 'relative',
+          '&:after': {
+            content: '""',
+            position: 'absolute',
+            bottom: -6,
+            left: 0,
+            width: 40,
+            height: 2,
+            bgcolor: 'primary.main',
+          }
+        }}
+      >
         My Posts
       </Typography>
       {posts.length > 0 ? (
@@ -260,11 +331,13 @@ const ProfilePage = ({ user, setUser }) => {
               <Card
                 sx={{
                   borderRadius: 3,
-                  boxShadow: 3,
-                  overflow: 'hidden',
-                  transition: 'transform 0.2s',
-                  '&:hover': { transform: 'scale(1.02)' },
-                  cursor: 'pointer',
+                  bgcolor: 'background.paper',
+                  boxShadow: '0 3px 15px rgba(0,0,0,0.08)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    boxShadow: '0 6px 20px rgba(0,0,0,0.12)',
+                    transform: 'translateY(-2px)',
+                  },
                   position: 'relative',
                 }}
                 onClick={() => setSelectedPost(post)}
@@ -273,14 +346,31 @@ const ProfilePage = ({ user, setUser }) => {
                   component="img"
                   image={post.img}
                   alt={post.title}
-                  sx={{ height: 250, objectFit: 'cover' }}
+                  sx={{ 
+                    height: 250, 
+                    objectFit: 'cover',
+                    borderTopLeftRadius: 12,
+                    borderTopRightRadius: 12,
+                  }}
                 />
                 <Box sx={{ p: 2 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                  <Typography 
+                    variant="subtitle1" 
+                    sx={{ 
+                      fontWeight: 500, 
+                      color: 'text.primary' 
+                    }}
+                  >
                     {post.title}
                   </Typography>
                   {post.description && (
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography 
+                      variant="body2" 
+                      sx={{ 
+                        color: 'text.secondary',
+                        mt: 1 
+                      }}
+                    >
                       {post.description}
                     </Typography>
                   )}
@@ -290,7 +380,12 @@ const ProfilePage = ({ user, setUser }) => {
                     position: 'absolute',
                     top: 8,
                     right: 8,
-                    color: 'error.main',
+                    backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.85)',
+                    '&:hover': { 
+                      backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.3)' : '#ffffff',
+                      color: 'error.main',
+                    },
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -304,7 +399,17 @@ const ProfilePage = ({ user, setUser }) => {
           ))}
         </Grid>
       ) : (
-        <Typography variant="body2" sx={{ mt: 2, color: 'text.secondary', textAlign: 'center' }}>
+        <Typography 
+          variant="body2" 
+          sx={{ 
+            mt: 2, 
+            color: 'text.secondary', 
+            textAlign: 'center',
+            py: 2,
+            bgcolor: 'background.default',
+            borderRadius: 2,
+          }}
+        >
           No posts yet.
         </Typography>
       )}
@@ -318,27 +423,48 @@ const ProfilePage = ({ user, setUser }) => {
       {/* Edit Profile Modal */}
       <Modal open={editOpen} onClose={handleEditClose}>
         <Box
-          sx={(theme) => ({
+          sx={{
             p: 4,
             width: { xs: '90%', sm: 400 },
             mx: 'auto',
             mt: '20vh',
-            backgroundColor: theme.palette.background.paper,
+            bgcolor: 'background.paper',
             borderRadius: 3,
-            boxShadow: 3,
-          })}
+            boxShadow: '0 6px 20px rgba(0,0,0,0.1)',
+            border: (theme) => `1px solid ${theme.palette.divider}`,
+          }}
         >
-          <Typography variant="h6" sx={{ mb: 2 }}>
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              mb: 2, 
+              fontWeight: 500,
+              color: 'text.primary' 
+            }}
+          >
             Edit Profile
           </Typography>
-          <Divider sx={{ mb: 2 }} />
-          <Typography variant="body2" sx={{ mb: 1 }}>
+          <Divider sx={{ mb: 2, opacity: 0.6 }} />
+          <Typography 
+            variant="body2" 
+            sx={{ mb: 1, color: 'text.secondary' }}
+          >
             Name: {user.name}
           </Typography>
-          <Typography variant="body2" sx={{ mb: 1 }}>
+          <Typography 
+            variant="body2" 
+            sx={{ mb: 1, color: 'text.secondary' }}
+          >
             Email: {user.email}
           </Typography>
-          <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold', color: 'primary.main' }}>
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              mb: 2, 
+              fontWeight: 500, 
+              color: 'primary.main' 
+            }}
+          >
             Troop: {user.troop}
           </Typography>
           <TextField
@@ -348,6 +474,19 @@ const ProfilePage = ({ user, setUser }) => {
             name="username"
             value={editData.username}
             onChange={handleChange}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                bgcolor: 'background.default',
+                '& fieldset': { borderColor: 'divider' },
+                '&:hover fieldset': { borderColor: 'primary.main' },
+                '&.Mui-focused fieldset': { borderColor: 'primary.main' },
+              },
+              '& .MuiInputLabel-root': {
+                color: 'text.secondary',
+                '&.Mui-focused': { color: 'primary.main' },
+              },
+            }}
           />
           <TextField
             fullWidth
@@ -356,13 +495,40 @@ const ProfilePage = ({ user, setUser }) => {
             name="avatar"
             value={editData.avatar}
             onChange={handleChange}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                bgcolor: 'background.default',
+                '& fieldset': { borderColor: 'divider' },
+                '&:hover fieldset': { borderColor: 'primary.main' },
+                '&.Mui-focused fieldset': { borderColor: 'primary.main' },
+              },
+              '& .MuiInputLabel-root': {
+                color: 'text.secondary',
+                '&.Mui-focused': { color: 'primary.main' },
+              },
+            }}
           />
           {errorMessage && (
-            <Typography variant="body2" sx={{ mt: 1, color: 'error.main' }}>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                mt: 1, 
+                color: 'error.main',
+                bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(239,68,68,0.1)' : '#fef2f2',
+                p: 1,
+                borderRadius: 1,
+              }}
+            >
               {errorMessage}
             </Typography>
           )}
-          <Button variant="contained" fullWidth sx={[blueButtonSx, { mt: 2 }]} onClick={handleSave}>
+          <Button 
+            variant="contained" 
+            fullWidth 
+            sx={[blueButtonSx, { mt: 2 }]} 
+            onClick={handleSave}
+          >
             Save Changes
           </Button>
         </Box>
@@ -378,28 +544,57 @@ const ProfilePage = ({ user, setUser }) => {
             transform: 'translate(-50%, -50%)',
             width: { xs: '90%', sm: 400 },
             bgcolor: 'background.paper',
-            borderRadius: 2,
-            boxShadow: 24,
+            borderRadius: 3,
+            boxShadow: '0 6px 20px rgba(0,0,0,0.1)',
             p: 4,
+            maxHeight: '80vh',
+            overflowY: 'auto',
           }}
         >
-          <Typography variant="h6" gutterBottom>
+          <Typography 
+            variant="h6" 
+            gutterBottom
+            sx={{ fontWeight: 500, color: 'text.primary' }}
+          >
             Followers
           </Typography>
           {followers.length === 0 ? (
-            <Typography variant="body2">No followers found.</Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              No followers found.
+            </Typography>
           ) : (
             <List>
               {followers.map((follower) => (
-                <ListItem key={follower._id} divider>
+                <ListItem 
+                  key={follower._id} 
+                  divider
+                  sx={{ 
+                    '&:hover': { bgcolor: 'background.default' },
+                    transition: 'background-color 0.2s',
+                  }}
+                >
                   <ListItemAvatar>
                     <Avatar src={follower.avatar} alt={follower.username || follower.name} />
                   </ListItemAvatar>
                   <ListItemText
                     primary={follower.username || follower.name}
                     secondary={follower.email}
+                    primaryTypographyProps={{ color: 'text.primary', fontWeight: 500 }}
+                    secondaryTypographyProps={{ color: 'text.secondary' }}
                   />
-                  <Button variant="outlined" onClick={() => navigate(`/viewprofile/${follower._id}`)}>
+                  <Button 
+                    variant="outlined" 
+                    onClick={() => navigate(`/viewprofile/${follower._id}`)}
+                    sx={{
+                      borderRadius: 2,
+                      borderColor: 'primary.main',
+                      color: 'primary.main',
+                      '&:hover': {
+                        bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(66,165,245,0.1)' : '#f0f7ff',
+                        borderColor: 'primary.dark',
+                      },
+                    }}
+                  >
                     View Profile
                   </Button>
                 </ListItem>
@@ -419,28 +614,57 @@ const ProfilePage = ({ user, setUser }) => {
             transform: 'translate(-50%, -50%)',
             width: { xs: '90%', sm: 400 },
             bgcolor: 'background.paper',
-            borderRadius: 2,
-            boxShadow: 24,
+            borderRadius: 3,
+            boxShadow: '0 6px 20px rgba(0,0,0,0.1)',
             p: 4,
+            maxHeight: '80vh',
+            overflowY: 'auto',
           }}
         >
-          <Typography variant="h6" gutterBottom>
+          <Typography 
+            variant="h6" 
+            gutterBottom
+            sx={{ fontWeight: 500, color: 'text.primary' }}
+          >
             Following
           </Typography>
           {following.length === 0 ? (
-            <Typography variant="body2">Not following anyone.</Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              Not following anyone.
+            </Typography>
           ) : (
             <List>
               {following.map((followed) => (
-                <ListItem key={followed._id} divider>
+                <ListItem 
+                  key={followed._id} 
+                  divider
+                  sx={{ 
+                    '&:hover': { bgcolor: 'background.default' },
+                    transition: 'background-color 0.2s',
+                  }}
+                >
                   <ListItemAvatar>
                     <Avatar src={followed.avatar} alt={followed.username || followed.name} />
                   </ListItemAvatar>
                   <ListItemText
                     primary={followed.username || followed.name}
                     secondary={followed.email}
+                    primaryTypographyProps={{ color: 'text.primary', fontWeight: 500 }}
+                    secondaryTypographyProps={{ color: 'text.secondary' }}
                   />
-                  <Button variant="outlined" onClick={() => navigate(`/viewprofile/${followed._id}`)}>
+                  <Button 
+                    variant="outlined" 
+                    onClick={() => navigate(`/viewprofile/${followed._id}`)}
+                    sx={{
+                      borderRadius: 2,
+                      borderColor: 'primary.main',
+                      color: 'primary.main',
+                      '&:hover': {
+                        bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(66,165,245,0.1)' : '#f0f7ff',
+                        borderColor: 'primary.dark',
+                      },
+                    }}
+                  >
                     View Profile
                   </Button>
                 </ListItem>

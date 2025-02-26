@@ -12,17 +12,43 @@ import {
 } from '@mui/material';
 import { motion } from 'framer-motion';
 
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: 'easeOut', staggerChildren: 0.15 },
+  },
+};
+
+const fieldVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: 'easeOut' },
+  },
+};
+
+const buttonVariants = {
+  hover: { 
+    scale: 1.02, 
+    transition: { duration: 0.2 }
+  },
+  tap: { scale: 0.98 }
+};
+
 const UploadPostPage = ({ user }) => {
   const [imgUrl, setImgUrl] = useState('');
   const [caption, setCaption] = useState('');
   const [description, setDescription] = useState('');
-  const [tag, setTag] = useState('Wild'); // default tag
+  const [tag, setTag] = useState('Wild');
   const [preview, setPreview] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [imageError, setImageError] = useState(false);
 
-  // When URL is changed, update preview and reset image error flag
   const handleImgUrlChange = (e) => {
     const url = e.target.value;
     setImgUrl(url);
@@ -36,10 +62,9 @@ const UploadPostPage = ({ user }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Use the passed user prop or fall back to localStorage if not provided
     const loggedUser = user || JSON.parse(localStorage.getItem('user'));
     const userId = loggedUser?._id || loggedUser?.id;
-    console.log("Logged in user:", loggedUser);
+    console.log('Logged in user:', loggedUser);
     if (!userId) {
       alert('Please log in to upload a post.');
       return;
@@ -63,7 +88,7 @@ const UploadPostPage = ({ user }) => {
         }),
       });
       const data = await response.json();
-      console.log("Response from server:", data);
+      console.log('Response from server:', data);
       if (response.ok) {
         alert('Post Uploaded!');
         setImgUrl('');
@@ -84,95 +109,269 @@ const UploadPostPage = ({ user }) => {
   return (
     <Box
       sx={{
+        minHeight: '100vh',
+        bgcolor: 'background.default',
+        p: { xs: 2, sm: 4 },
         display: 'flex',
-        justifyContent: 'center',
         alignItems: 'center',
-        minHeight: '80vh',
-        background: '#f5f5f5',
-        p: 2,
+        justifyContent: 'center',
       }}
     >
       <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        style={{ width: '100%', maxWidth: 520 }}
       >
-        <Paper sx={{ p: 4, width: { xs: '90%', sm: 500 }, boxShadow: 3 }}>
-          <Typography variant="h4" gutterBottom align="center">
-            Upload Post
+        <Paper
+          sx={{
+            p: { xs: 3, sm: 4 },
+            borderRadius: 4,
+            bgcolor: 'background.paper',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+            border: (theme) => `1px solid ${theme.palette.divider}`,
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              boxShadow: '0 12px 32px rgba(0,0,0,0.15)',
+            },
+          }}
+        >
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 700,
+              mb: 4,
+              textAlign: 'center',
+              color: 'text.primary',
+              position: 'relative',
+              '&:after': {
+                content: '""',
+                position: 'absolute',
+                bottom: -8,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: 60,
+                height: 3,
+                background: (theme) => theme.palette.primary.main,
+                borderRadius: 2,
+              },
+            }}
+          >
+            Upload a Post
           </Typography>
           <form onSubmit={handleSubmit}>
-            <TextField
-              label="Image URL"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              value={imgUrl}
-              onChange={handleImgUrlChange}
-              required
-            />
+            <motion.div variants={fieldVariants}>
+              <TextField
+                label="Image URL"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={imgUrl}
+                onChange={handleImgUrlChange}
+                required
+                sx={{
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 3,
+                    bgcolor: 'background.default',
+                    '& fieldset': { borderColor: 'divider' },
+                    '&:hover fieldset': { borderColor: 'primary.main' },
+                    '&.Mui-focused fieldset': { 
+                      borderColor: 'primary.main',
+                      borderWidth: 2,
+                    },
+                  },
+                  '& .MuiInputLabel-root': { 
+                    color: 'text.secondary',
+                    '&.Mui-focused': { color: 'primary.main' },
+                  },
+                }}
+              />
+            </motion.div>
             {preview && !imageError && (
-              <Box sx={{ mt: 2, textAlign: 'center' }}>
-                <img
-                  src={preview}
-                  alt="Preview"
-                  style={{ maxWidth: '100%', maxHeight: 300, borderRadius: 8 }}
-                  onError={() => setImageError(true)}
-                />
-              </Box>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+              >
+                <Box 
+                  sx={{ 
+                    mt: 2, 
+                    mb: 3,
+                    borderRadius: 3,
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+                    border: (theme) => `1px solid ${theme.palette.divider}`,
+                  }}
+                >
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    style={{
+                      width: '100%',
+                      maxHeight: 300,
+                      objectFit: 'cover',
+                      display: 'block',
+                    }}
+                    onError={() => setImageError(true)}
+                  />
+                </Box>
+              </motion.div>
             )}
             {imageError && (
-              <Box sx={{ mt: 2, textAlign: 'center' }}>
-                <Typography color="error" variant="body2">
-                  Sorry, we can't fetch your work <span role="img" aria-label="cute face">😊</span>
-                </Typography>
-              </Box>
-            )}
-            <TextField
-              label="Caption (Title)"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              value={caption}
-              onChange={(e) => setCaption(e.target.value)}
-            />
-            <TextField
-              label="Description"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              multiline
-              rows={3}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            <FormControl fullWidth margin="normal">
-              <InputLabel id="tag-select-label">Tag</InputLabel>
-              <Select
-                labelId="tag-select-label"
-                id="tag-select"
-                value={tag}
-                label="Tag"
-                onChange={handleTagChange}
+              <Typography
+                sx={{
+                  mt: 2,
+                  mb: 2,
+                  textAlign: 'center',
+                  color: 'error.main',
+                  fontSize: '0.95rem',
+                  bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(239,68,68,0.1)' : '#fef2f2',
+                  py: 1,
+                  borderRadius: 2,
+                }}
               >
-                <MenuItem value="Marine">Marine</MenuItem>
-                <MenuItem value="Wild">Wild</MenuItem>
-              </Select>
-            </FormControl>
+                Image failed to load
+              </Typography>
+            )}
+            <motion.div variants={fieldVariants}>
+              <TextField
+                label="Caption"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={caption}
+                onChange={(e) => setCaption(e.target.value)}
+                sx={{
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 3,
+                    bgcolor: 'background.default',
+                    '& fieldset': { borderColor: 'divider' },
+                    '&:hover fieldset': { borderColor: 'primary.main' },
+                    '&.Mui-focused fieldset': { 
+                      borderColor: 'primary.main',
+                      borderWidth: 2,
+                    },
+                  },
+                  '& .MuiInputLabel-root': { 
+                    color: 'text.secondary',
+                    '&.Mui-focused': { color: 'primary.main' },
+                  },
+                }}
+              />
+            </motion.div>
+            <motion.div variants={fieldVariants}>
+              <TextField
+                label="Description"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                multiline
+                rows={4}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                sx={{
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 3,
+                    bgcolor: 'background.default',
+                    '& fieldset': { borderColor: 'divider' },
+                    '&:hover fieldset': { borderColor: 'primary.main' },
+                    '&.Mui-focused fieldset': { 
+                      borderColor: 'primary.main',
+                      borderWidth: 2,
+                    },
+                  },
+                  '& .MuiInputLabel-root': { 
+                    color: 'text.secondary',
+                    '&.Mui-focused': { color: 'primary.main' },
+                  },
+                }}
+              />
+            </motion.div>
+            <motion.div variants={fieldVariants}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel sx={{ 
+                  color: 'text.secondary',
+                  '&.Mui-focused': { color: 'primary.main' },
+                }}>
+                  Tag
+                </InputLabel>
+                <Select
+                  value={tag}
+                  label="Tag"
+                  onChange={handleTagChange}
+                  sx={{
+                    mb: 3,
+                    borderRadius: 3,
+                    bgcolor: 'background.default',
+                    '& .MuiOutlinedInput-notchedOutline': { 
+                      borderColor: 'divider' 
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': { 
+                      borderColor: 'primary.main' 
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { 
+                      borderColor: 'primary.main',
+                      borderWidth: 2,
+                    },
+                  }}
+                >
+                  <MenuItem value="Marine">Marine</MenuItem>
+                  <MenuItem value="Wild">Wild</MenuItem>
+                </Select>
+              </FormControl>
+            </motion.div>
             {error && (
-              <Typography variant="body2" color="error" align="center">
+              <Typography
+                sx={{
+                  mt: 2,
+                  mb: 3,
+                  textAlign: 'center',
+                  color: 'error.main',
+                  fontSize: '0.95rem',
+                  bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(239,68,68,0.1)' : '#fef2f2',
+                  py: 1,
+                  borderRadius: 2,
+                }}
+              >
                 {error}
               </Typography>
             )}
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              sx={{ mt: 2 }}
-              disabled={loading}
-            >
-              {loading ? 'Uploading...' : 'Upload'}
-            </Button>
+            <motion.div variants={fieldVariants}>
+              <Button
+                component={motion.button}
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
+                type="submit"
+                variant="contained"
+                fullWidth
+                disabled={loading}
+                sx={{
+                  mt: 2,
+                  py: 1.5,
+                  borderRadius: 3,
+                  bgcolor: 'primary.main',
+                  color: 'primary.contrastText',
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  '&:hover': {
+                    bgcolor: 'primary.dark',
+                    boxShadow: '0 6px 16px rgba(0,0,0,0.15)',
+                  },
+                  '&:disabled': {
+                    bgcolor: 'action.disabledBackground',
+                    color: 'action.disabled',
+                    boxShadow: 'none',
+                  },
+                }}
+              >
+                {loading ? 'Uploading...' : 'Upload'}
+              </Button>
+            </motion.div>
           </form>
         </Paper>
       </motion.div>

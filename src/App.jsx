@@ -1,40 +1,83 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { GlobalStyles, keyframes } from '@mui/material';
 import LoginPage from './LoginPage';
 import ClippedDrawer from './ClippedDrawer';
 
-// Define palettes for light and dark modes
+
+// Animation keyframes
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+const float = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+  100% { transform: translateY(0px); }
+`;
+
+// Enhanced palettes with transitions
 const lightPalette = {
   mode: 'light',
-  primary: { main: '#2E7D32' }, // Deep forest green
-  secondary: { main: '#E2725B' }, // Terracotta
-  background: { default: '#F5F0E1', paper: '#FFFFFF' }, // Warm beige and white
-  text: { primary: '#424242' }, // Dark charcoal gray
+  primary: { main: '#2E7D32' },
+  secondary: { main: '#E2725B' },
+  background: { default: '#F5F0E1', paper: '#FFFFFF' },
+  text: { primary: '#424242' },
+  transitions: {
+    hover: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    themeChange: 'background-color 0.5s ease, color 0.3s ease'
+  },
 };
 
 const darkPalette = {
   mode: 'dark',
-  primary: { main: '#66BB6A' }, // Lighter green for visibility
-  secondary: { main: '#FF8A65' }, // Lighter terracotta
-  background: { default: '#121212', paper: '#1E1E1E' }, // Dark gray tones
-  text: { primary: '#E0E0E0' }, // Light gray
+  primary: { main: '#66BB6A' },
+  secondary: { main: '#FF8A65' },
+  background: { default: '#121212', paper: '#1E1E1E' },
+  text: { primary: '#E0E0E0' },
+  transitions: {
+    hover: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    themeChange: 'background-color 0.5s ease, color 0.3s ease'
+  },
 };
 
-// Create theme function
 const theme = (darkMode) =>
   createTheme({
     palette: darkMode ? darkPalette : lightPalette,
     typography: {
-      fontFamily: '"Poppins", sans-serif', // Modern and stylish
+      fontFamily: '"Poppins", sans-serif',
       button: { textTransform: 'none', fontWeight: 'bold' },
     },
     components: {
       MuiButton: {
-        styleOverrides: { root: { borderRadius: 6, fontWeight: 'bold' } },
+        styleOverrides: {
+          root: {
+            borderRadius: 6,
+            fontWeight: 'bold',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              transform: 'scale(1.05)',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+            },
+            '&:active': {
+              transform: 'scale(0.98)'
+            }
+          },
+        },
       },
       MuiPaper: {
-        styleOverrides: { root: { borderRadius: 10, boxShadow: 'none' } },
+        styleOverrides: {
+          root: {
+            borderRadius: 10,
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              boxShadow: '0 6px 24px rgba(0, 0, 0, 0.12)'
+            }
+          },
+        },
       },
     },
   });
@@ -42,17 +85,30 @@ const theme = (darkMode) =>
 const App = () => {
   const [user, setUser] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
-  const toggleDarkMode = () => setDarkMode((prev) => !prev);
+  const toggleDarkMode = () => {
+    setDarkMode((prev) => !prev);
+    document.documentElement.style.transition = 
+      'background-color 0.5s ease, color 0.3s ease';
+  };
 
   return (
     <ThemeProvider theme={theme(darkMode)}>
+      <GlobalStyles
+        styles={{
+          body: {
+            backgroundColor: darkMode ? '#121212' : '#F5F0E1',
+            transition: 'background-color 0.5s ease',
+          },
+          '@keyframes fadeIn': fadeIn,
+          '@keyframes float': float,
+        }}
+      />
       <Routes>
         <Route
           path="/*"
@@ -66,21 +122,6 @@ const App = () => {
                 toggleDarkMode={toggleDarkMode}
                 darkMode={darkMode}
               />
-            )
-          }
-        />
-        <Route
-          path="/*"
-          element={
-            user ? (
-              <ClippedDrawer
-                user={user}
-                setUser={setUser}
-                toggleDarkMode={toggleDarkMode}
-                darkMode={darkMode}
-              />
-            ) : (
-              <Navigate to="/*" />
             )
           }
         />

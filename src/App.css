@@ -1,3 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+  100% { transform: translateY(0px); }
+}
+.active .MuiListItemIcon-root {
+  color: inherit !important;
+}
+img {
+  background: linear-gradient(
+    45deg,
+    #f0f0f0 25%,
+    #ffffff 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 200%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/poppins/v20/pxiEyp8kv8JHgFVrJJfedw.ttf) format('truetype');
+}
 
 
 #root {
