@@ -3,6 +3,104 @@ import { Container, Typography, Box, TextField, Tabs, Tab } from '@mui/material'
 import Masonry from '@mui/lab/Masonry';
 import { motion } from 'framer-motion';
 import PostDetailModal from './PostDetailModal';
+import { keyframes } from '@mui/system';
+
+// Reusing AnimatedHeading from HomeGrid
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+const float = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+  100% { transform: translateY(0px); }
+`;
+
+const headingFadeVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { duration: 1.2, ease: 'easeInOut' },
+  },
+  hover: { opacity: 0.9, scale: 1.02 },
+};
+
+const underlineFadeVariants = {
+  hidden: { opacity: 0, scaleX: 0 },
+  visible: {
+    opacity: 1,
+    scaleX: 1,
+    transition: { duration: 1.5, ease: 'easeInOut', delay: 0.3 },
+  },
+  hover: { opacity: 0.8 },
+};
+
+const AnimatedHeading = ({ text }) => (
+  <Box sx={{ textAlign: 'center', mb: 5, mt: 4 }}>
+    <motion.div
+      variants={headingFadeVariants}
+      initial="hidden"
+      animate="visible"
+      whileHover="hover"
+    >
+      <Typography
+        variant="h3"
+        sx={{
+          fontFamily: '"Roboto", sans-serif',
+          fontWeight: 700,
+          fontSize: { xs: '28px', md: '40px' },
+          color: 'text.primary',
+          letterSpacing: '2px',
+          textTransform: 'uppercase',
+          position: 'relative',
+          textShadow: (theme) =>
+            theme.palette.mode === 'dark'
+              ? '0 0 10px rgba(255,255,255,0.4)'
+              : '0 0 10px rgba(0,0,0,0.2)',
+        }}
+      >
+        {text}
+        <motion.div
+          variants={underlineFadeVariants}
+          initial="hidden"
+          animate="visible"
+          whileHover="hover"
+          sx={{
+            position: 'absolute',
+            bottom: '-8px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '80%',
+            height: '3px',
+            bgcolor: 'primary.main',
+            borderRadius: '2px',
+            boxShadow: (theme) =>
+              theme.palette.mode === 'dark'
+                ? '0 0 12px rgba(66,165,245,0.6)'
+                : '0 0 12px rgba(25,118,210,0.4)',
+          }}
+        />
+      </Typography>
+    </motion.div>
+  </Box>
+);
+
+// Animation variants for other elements
+const pageVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+};
+
+const gridItemVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.3, ease: 'easeOut' } },
+  hover: { scale: 1.05, boxShadow: '0 8px 20px rgba(0,0,0,0.15)' },
+};
+
+const tabVariants = {
+  hover: { scale: 1.05, color: '#27ae60', transition: { duration: 0.2 } },
+};
 
 const ExplorePage = ({ currentUser }) => {
   const [posts, setPosts] = useState([]);
@@ -41,49 +139,74 @@ const ExplorePage = ({ currentUser }) => {
   const handleCloseModal = () => setSelectedPost(null);
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      {/* Title with fade-in animation */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Typography
-          variant="h4"
-          align="center"
-          gutterBottom
-          sx={{
-            fontFamily: '"Poppins", sans-serif',
-            fontWeight: 600,
-            color: '#2c3e50',
-            textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
-          }}
-        >
-          Explore Posts
-        </Typography>
-      </motion.div>
+    <Container
+      maxWidth="lg"
+      sx={{
+        py: 4,
+        bgcolor: 'background.default',
+        minHeight: '100vh',
+        position: 'relative',
+      }}
+    >
+      {/* Heading from HomeGrid */}
+      <AnimatedHeading text="Explore Posts" />
 
-      {/* Search bar with enhanced styling */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-        <TextField
-          label="Search posts..."
-          variant="outlined"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          sx={{
-            width: '60%',
-            '& .MuiOutlinedInput-root': {
-              borderRadius: '8px',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            },
-            '& .MuiInputLabel-root': {
-              color: '#2c3e50',
-            },
-          }}
-        />
+      {/* Refreshed Search Field with Pexels-inspired, Cleaner Style */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          mb: 4,
+          position: 'relative',
+        }}
+      >
+        <motion.div
+          variants={pageVariants}
+          initial="hidden"
+          animate="visible"
+          whileHover={{ scale: 1.02, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <TextField
+            label="Search posts..."
+            variant="outlined"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            sx={{
+              width: { xs: '80%', sm: '60%', md: '50%' },
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '20px', // Larger, softer rounded corners for a sleek look
+                boxShadow: 'none', // Removed shadow for a flatter, cleaner design
+                backgroundColor: 'background.paper',
+                transition: 'all 0.3s ease-in-out',
+                border: '1px solid #e0e0e0', // Subtle border for definition
+                '&:hover': {
+                  borderColor: '#27ae60', // Green border on hover
+                  boxShadow: '0 2px 10px rgba(39, 174, 96, 0.1)', // Light shadow on hover
+                  transform: 'translateY(-2px)',
+                },
+                '&.Mui-focused': {
+                  borderColor: '#27ae60', // Green border on focus
+                  boxShadow: '0 4px 16px rgba(39, 174, 96, 0.2)', // Subtle green glow on focus
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: '#2c3e50',
+                fontFamily: '"Roboto", sans-serif',
+                fontWeight: 500,
+                transform: 'translate(14px, 12px) scale(1)', // Adjust label position for larger radius
+              },
+              '& .MuiInputBase-input': {
+                fontFamily: '"Roboto", sans-serif',
+                color: '#2c3e50',
+                padding: '14px 16px', // More padding for spaciousness
+              },
+            }}
+          />
+        </motion.div>
       </Box>
 
-      {/* Tabs with hover effects and consistent styling */}
+      {/* Refreshed Navigation (Tabs) with Pexels-inspired, Cleaner Style */}
       <Tabs
         value={selectedTag}
         onChange={handleTabChange}
@@ -91,18 +214,32 @@ const ExplorePage = ({ currentUser }) => {
         textColor="primary"
         indicatorColor="primary"
         sx={{
+          mb: 4,
           '& .MuiTab-root': {
             fontFamily: '"Roboto", sans-serif',
             fontSize: '16px',
-            fontWeight: 500,
+            fontWeight: 600,
             color: '#2c3e50',
+            bgcolor: 'transparent', // Removed background for a cleaner look
+            borderRadius: '10px', // Softer rounded corners
+            px: 4,
+            py: 1.5,
+            boxShadow: 'none', // Removed shadow for flat design
+            transition: 'all 0.3s ease-in-out',
             '&:hover': {
               color: '#27ae60',
-              transition: 'color 0.3s ease',
+              bgcolor: 'rgba(39, 174, 96, 0.1)', // Light green background on hover
+              transform: 'scale(1.05)',
+            },
+            '&.Mui-selected': {
+              color: '#27ae60',
+              bgcolor: 'rgba(39, 174, 96, 0.15)', // Slightly darker green background for selected
+              border: '1px solid #27ae60', // Thin green border for selected
+              fontWeight: 700,
             },
           },
-          '& .Mui-selected': {
-            color: '#27ae60',
+          '& .MuiTabs-indicator': {
+            display: 'none', // Hide default indicator, use custom styling
           },
         }}
       >
@@ -111,62 +248,98 @@ const ExplorePage = ({ currentUser }) => {
         <Tab label="Wild" value="Wild" />
       </Tabs>
 
-      {/* Masonry grid with enhanced card styling */}
-      <Box sx={{ mt: 4 }}>
-        <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
+      {/* Maintain Post Style (Masonry Grid) from Previous Version */}
+      <Box sx={{ mt: 4, position: 'relative' }}>
+        <Masonry
+          columns={{ xs: 1, sm: 2, md: 3, lg: 4 }}
+          spacing={4}
+          sx={{ width: '100%' }}
+        >
           {filteredPosts.map((post) => (
-            <Box
+            <motion.div
               key={post._id || post.id}
-              sx={{
-                borderRadius: 2,
-                overflow: 'hidden',
-                cursor: 'pointer',
-                boxShadow: '0 4px 10px rgba(0,0,0,0.08)',
-                transition: 'box-shadow 0.3s ease',
-                '&:hover': {
-                  boxShadow: '0 6px 14px rgba(0,0,0,0.12)',
-                },
-              }}
-              onClick={() => handlePostClick(post)}
+              variants={gridItemVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              whileHover="hover"
+              style={{ overflow: 'hidden' }}
             >
-              <motion.div whileHover={{ scale: 1.03 }} transition={{ duration: 0.3 }}>
+              <Box
+                sx={{
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  bgcolor: 'background.paper',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.06)', // Softer shadow
+                  transition: 'all 0.3s ease-in-out',
+                  '&:hover': {
+                    boxShadow: '0 8px 28px rgba(0,0,0,0.15)',
+                    transform: 'translateY(-6px)',
+                  },
+                  position: 'relative',
+                  background: 'linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%)', // Subtle gradient for depth
+                }}
+                onClick={() => handlePostClick(post)}
+              >
                 {post.video ? (
-                  <img
+                  <video
                     src={post.video}
                     alt={post.title}
-                    style={{ width: '100%', height: 300, objectFit: 'cover', borderRadius: '8px 8px 0 0' }}
+                    autoPlay
+                    loop
+                    muted
+                    style={{
+                      width: '100%',
+                      height: 400, // Slightly taller for emphasis
+                      objectFit: 'cover',
+                      borderRadius: '8px 8px 0 0',
+                    }}
                   />
                 ) : (
                   <img
                     src={post.img}
                     alt={post.title}
-                    style={{ width: '100%', height: 300, objectFit: 'cover', borderRadius: '8px 8px 0 0' }}
+                    loading="lazy"
+                    style={{
+                      width: '100%',
+                      height: 400, // Slightly taller for emphasis
+                      objectFit: 'cover',
+                      borderRadius: '8px 8px 0 0',
+                    }}
                   />
                 )}
-                <Typography
-                  variant="body1"
-                  align="center"
-                  sx={{
-                    mt: 1,
-                    fontFamily: '"Roboto", sans-serif',
-                    fontWeight: 500,
-                    color: '#2c3e50',
-                  }}
-                >
-                  {post.title}
-                </Typography>
-              </motion.div>
-            </Box>
+                <Box sx={{ p: 2, bgcolor: 'rgba(255,255,255,0.9)' }}>
+                  <Typography
+                    variant="h5"
+                    align="center"
+                    sx={{
+                      mt: 1,
+                      fontFamily: '"Roboto", sans-serif',
+                      fontWeight: 600,
+                      color: '#2c3e50',
+                      textShadow: '1px 1px 2px rgba(0,0,0,0.05)',
+                      transition: 'color 0.3s ease',
+                      '&:hover': {
+                        color: '#27ae60',
+                      },
+                    }}
+                  >
+                    {post.title}
+                  </Typography>
+                </Box>
+              </Box>
+            </motion.div>
           ))}
         </Masonry>
       </Box>
 
-      {/* Modal with fade-in animation */}
+      {/* Modal with fade-in and slide animation, consistent with HomeGrid */}
       {selectedPost && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 50 }}
           transition={{ duration: 0.4, ease: 'easeInOut' }}
         >
           <PostDetailModal post={selectedPost} onClose={handleCloseModal} currentUser={currentUser} />
