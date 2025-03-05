@@ -30,7 +30,7 @@ import UploadPostPage from './UploadPostPage';
 import SettingsPage from './SettingsPage';
 import ConservationPage from './ConservationPage';
 import Appbar from './Appbar';
-import SearchPeoplePage from './SearchPeoplepage';
+import SearchPeoplePage from './SearchPeoplePage';
 import ViewProfile from './ViewProfile';
 import Notifications from './Notifications';
 import FollowRequests from './FollowRequests';
