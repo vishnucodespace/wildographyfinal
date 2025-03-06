@@ -72,6 +72,7 @@ const LoginPage = ({ setUser }) => {
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(true);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleTabChange = (event, newValue) => {
     setTabIndex(newValue);
@@ -82,7 +83,7 @@ const LoginPage = ({ setUser }) => {
     e.preventDefault();
     setErrorMessage("");
     try {
-      const response = await fetch('http://localhost:5174/api/auth/login', {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: loginEmail, password: loginPassword }),
@@ -105,7 +106,7 @@ const LoginPage = ({ setUser }) => {
     e.preventDefault();
     setErrorMessage("");
     try {
-      const response = await fetch('http://localhost:5174/api/auth/signup', {
+      const response = await fetch(`${API_URL}/api/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

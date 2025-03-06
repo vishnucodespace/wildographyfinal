@@ -8,6 +8,8 @@ import {
   Box,
 } from '@mui/material';
 import { motion } from 'framer-motion';
+const API_URL = import.meta.env.VITE_API_URL ;
+
 
 // Animation variants
 const listItemVariants = {
@@ -26,7 +28,7 @@ const Notifications = ({ currentUser }) => {
     // Fetch notifications for the current user
     const fetchNotifications = async () => {
       try {
-        const response = await fetch(`http://localhost:5174/api/notifications?userId=${currentUser._id}`);
+        const response = await fetch(`${API_URL}/api/notifications?userId=${currentUser._id}`);
         if (!response.ok) throw new Error(`Error: ${response.status}`);
         const data = await response.json();
         setNotifications(data);

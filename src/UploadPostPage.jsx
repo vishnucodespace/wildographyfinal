@@ -12,6 +12,8 @@ import {
 } from '@mui/material';
 import { motion } from 'framer-motion';
 
+const API_URL = import.meta.env.VITE_API_URL ;
+
 // Animation variants
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -76,7 +78,7 @@ const UploadPostPage = ({ user }) => {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch('http://localhost:5174/api/posts', {
+      const response = await fetch(`${API_URL}/api/posts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

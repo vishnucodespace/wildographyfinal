@@ -9,6 +9,7 @@ import {
   Box,
 } from '@mui/material';
 import { motion } from 'framer-motion';
+const API_URL = import.meta.env.VITE_API_URL;
 
 // Animation variants
 const listItemVariants = {
@@ -34,7 +35,7 @@ const FollowRequests = ({ currentUser }) => {
     const fetchFollowRequests = async () => {
       if (!currentUser) return;
       try {
-        const response = await fetch(`http://localhost:5174/api/notifications?userId=${currentUser._id}`, {
+        const response = await fetch(`${API_URL}/api/notifications?userId=${currentUser._id}`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -57,7 +58,7 @@ const FollowRequests = ({ currentUser }) => {
   // Handler for accepting a follow request
   const handleAccept = async (requesterId) => {
     try {
-      const response = await fetch(`http://localhost:5174/api/users/${requesterId}/accept-follow-request`, {
+      const response = await fetch(`${API_URL}/api/users/${requesterId}/accept-follow-request`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -78,7 +79,7 @@ const FollowRequests = ({ currentUser }) => {
   // Handler for rejecting a follow request
   const handleReject = async (requesterId) => {
     try {
-      const response = await fetch(`http://localhost:5174/api/users/${requesterId}/reject-follow-request`, {
+      const response = await fetch(`${API_URL}/api/users/${requesterId}/reject-follow-request`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -99,7 +100,7 @@ const FollowRequests = ({ currentUser }) => {
   // Handler for following back the requester
   const handleFollowBack = async (requesterId) => {
     try {
-      const response = await fetch(`http://localhost:5174/api/users/${requesterId}/follow-back`, {
+      const response = await fetch(`${API_URL}/api/users/${requesterId}/follow-back`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,

@@ -16,6 +16,9 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { useNavigate } from 'react-router-dom';
 
+
+const API_URL = import.meta.env.VITE_API_URL;
+
 // Animation variants (updated for consistency with HomeGrid/ExplorePage)
 const modalVariants = {
   hidden: { opacity: 0, scale: 0.95, y: 50 },
@@ -52,7 +55,7 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
 
   const handleLike = async () => {
     try {
-      const response = await fetch(`http://localhost:5174/api/posts/${localPost._id}/like`, {
+      const response = await fetch(`${API_URL}/api/posts/${localPost._id}/like`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -70,7 +73,7 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
   const handleAddComment = async () => {
     if (!commentText.trim()) return;
     try {
-      const response = await fetch(`http://localhost:5174/api/posts/${localPost._id}/comment`, {
+      const response = await fetch(`${API_URL}/api/posts/${localPost._id}/comment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -316,7 +319,7 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                       onClick={handleLike}
                       sx={{
                         color: 'error.main',
-                        '&:hover': { color: '#27ae60', transform: 'scale(1.1)' }, // Green hover for HomeGrid consistency
+                        '&:hover': { color: '#27ae60', transform: 'scale(1.1)' },
                         transition: 'all 0.3s ease-in-out',
                       }}
                     >
@@ -339,7 +342,7 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                     <IconButton
                       sx={{
                         color: '#2c3e50',
-                        '&:hover': { color: '#27ae60', transform: 'scale(1.1)' }, // Green hover for HomeGrid consistency
+                        '&:hover': { color: '#27ae60', transform: 'scale(1.1)' },
                         transition: 'all 0.3s ease-in-out',
                       }}
                     >
@@ -366,7 +369,7 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                   my: 2,
                   bgcolor: '#e0e0e0',
                   borderWidth: 1,
-                  borderStyle: 'dashed', // Pexels-like dashed divider for visual interest
+                  borderStyle: 'dashed',
                   transition: 'all 0.3s ease',
                   '&:hover': { bgcolor: '#27ae60', opacity: 0.5 },
                 }}
@@ -400,10 +403,10 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                           sx={{
                             mb: 2,
                             p: 2,
-                            bgcolor: '#ffffff', // White background for Instagram-like cards
-                            borderRadius: 8, // Slight rounding for Instagram style, but minimal
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)', // Subtle shadow for elevation
-                            border: '1px solid #e9ecef', // Light gray border for Instagram-like separation
+                            bgcolor: '#ffffff',
+                            borderRadius: 8,
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                            border: '1px solid #e9ecef',
                             transition: 'all 0.3s ease-in-out',
                             '&:hover': {
                               boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
@@ -413,13 +416,13 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                         >
                           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                             <Avatar
-                              src={comment.userAvatar || "https://via.placeholder.com/32"} // Smaller avatar for Instagram style
+                              src={comment.userAvatar || "https://via.placeholder.com/32"}
                               alt={comment.user}
                               sx={{
                                 width: 32,
                                 height: 32,
                                 mr: 1,
-                                border: '1px solid #27ae60', // Green border for HomeGrid consistency
+                                border: '1px solid #27ae60',
                                 transition: 'all 0.3s ease-in-out',
                                 '&:hover': {
                                   transform: 'scale(1.1)',
@@ -445,8 +448,8 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                             sx={{
                               fontFamily: '"Roboto", sans-serif',
                               color: '#666666',
-                              lineHeight: .2,
-                              wordBreak: 'break-word', // Ensure long comments wrap nicely
+                              lineHeight: 0.2,
+                              wordBreak: 'break-word',
                             }}
                           >
                             {comment.text}
@@ -480,18 +483,18 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                     onChange={(e) => setCommentText(e.target.value)}
                     sx={{
                       '& .MuiOutlinedInput-root': {
-                        borderRadius: 0, 
+                        borderRadius: 0,
                         bgcolor: 'background.paper',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.06)', // Subtle shadow
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                         transition: 'all 0.3s ease-in-out',
-                        border: '1px solid #e0e0e0', // Subtle border for definition
+                        border: '1px solid #e0e0e0',
                         '&:hover': {
                           boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-                          borderColor: '#27ae60', // Green border on hover
+                          borderColor: '#27ae60',
                           transform: 'translateY(-2px)',
                         },
                         '&.Mui-focused': {
-                          boxShadow: '0 6px 20px rgba(39, 174, 96, 0.2)', // Green glow on focus
+                          boxShadow: '0 6px 20px rgba(39, 174, 96, 0.2)',
                           borderColor: '#27ae60',
                         },
                       },
@@ -503,7 +506,7 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                       '& .MuiInputBase-input': {
                         fontFamily: '"Roboto", sans-serif',
                         color: '#2c3e50',
-                        padding: '12px 14px', // More padding for spaciousness
+                        padding: '12px 14px',
                       },
                     }}
                   />
@@ -512,17 +515,17 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                     color="primary"
                     onClick={handleAddComment}
                     sx={{
-                      borderRadius: 0, // Removed rounded borders as requested
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.08)', // Subtle shadow
+                      borderRadius: 0,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                       transition: 'all 0.3s ease-in-out',
                       '&:hover': {
-                        boxShadow: '0 6px 20px rgba(39, 174, 96, 0.2)', // Green shadow on hover
+                        boxShadow: '0 6px 20px rgba(39, 174, 96, 0.2)',
                         transform: 'translateY(-2px)',
                       },
                       fontFamily: '"Roboto", sans-serif',
                       fontWeight: 600,
-                      padding: '8px 20px', // Larger, Pexels-like button
-                      border: '1px solid #27ae60', // Subtle border for definition
+                      padding: '8px 20px',
+                      border: '1px solid #27ae60',
                     }}
                   >
                     Post
@@ -543,13 +546,13 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backdropFilter: 'none', // Removed blur for a clean backdrop
-            backgroundColor: 'rgba(0, 0, 0, 0.5)', // Subtle semi-transparent backdrop
+            backdropFilter: 'none',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
             border: 'none',
             outline: 'none',
-            boxShadow: 'none', // Remove shadow to prevent border-like effects
-            '&:focus': { outline: 'none', border: 'none' }, // Prevent focus outlines/borders
-            zIndex: 1400, // Ensure full-screen modal is above main modal
+            boxShadow: 'none',
+            '&:focus': { outline: 'none', border: 'none' },
+            zIndex: 1400,
           }}
         >
           <Box
@@ -558,11 +561,11 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
               width: '100%',
               height: '100%',
               display: 'flex',
-              justifyContent: 'center', // Centered alignment for better presentation
+              justifyContent: 'center',
               alignItems: 'center',
               border: 'none',
               outline: 'none',
-              zIndex: 1401, // Ensure container is above backdrop
+              zIndex: 1401,
             }}
           >
             <motion.div
@@ -578,17 +581,17 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                 image={localPost.img}
                 alt={localPost.title}
                 sx={{
-                  width: 'auto', // Adjusted to maintain aspect ratio, centered
+                  width: 'auto',
                   height: '100vh',
-                  maxWidth: '100%', // Prevent overflow
-                  objectFit: 'contain', // Flexible scaling, centered for better alignment
+                  maxWidth: '100%',
+                  objectFit: 'contain',
                   cursor: 'pointer',
                   border: 'none',
                   outline: 'none',
-                  '&:focus': { outline: 'none', border: 'none' }, // Prevent focus outlines/borders
+                  '&:focus': { outline: 'none', border: 'none' },
                   transition: 'transform 0.3s ease-in-out',
                   '&:hover': {
-                    transform: 'scale(1.02)', // Slight scale on hover for Pexels-like interactivity
+                    transform: 'scale(1.02)',
                   },
                 }}
               />
@@ -601,14 +604,14 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                 position: 'absolute',
                 top: 16,
                 right: 16,
-                color: '#2c3e50', // Consistent with HomeGrid/ExplorePage
-                '&:hover': { color: '#27ae60', transform: 'scale(1.1)', bgcolor: 'rgba(255,255,255,0.9)' }, // Smooth hover with slight background
-                zIndex: 1402, // Highest zIndex to ensure visibility
+                color: '#2c3e50',
+                '&:hover': { color: '#27ae60', transform: 'scale(1.1)', bgcolor: 'rgba(255,255,255,0.9)' },
+                zIndex: 1402,
                 border: 'none',
                 outline: 'none',
-                '&:focus': { outline: 'none', border: 'none' }, // Prevent focus outlines/borders
-                borderRadius: 0, // Removed rounded border for consistency
-                p: 1, // Padding for a larger hit area
+                '&:focus': { outline: 'none', border: 'none' },
+                borderRadius: 0,
+                p: 1,
               }}
             >
               <CloseIcon />

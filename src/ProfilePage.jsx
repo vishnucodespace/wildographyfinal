@@ -22,6 +22,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PostDetailModal from './PostDetailModal';
 import { useNavigate } from 'react-router-dom';
 
+
+const API_URL = import.meta.env.VITE_API_URL ;
+
 const ProfilePage = ({ user, setUser }) => {
   const [posts, setPosts] = useState([]);
   const [editOpen, setEditOpen] = useState(false);
@@ -41,7 +44,7 @@ const ProfilePage = ({ user, setUser }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch('http://localhost:5174/api/posts');
+        const response = await fetch(`${API_URL}/api/posts`);
         const data = await response.json();
         const userPosts = data.filter((post) =>
           String(post.userId) === String(user?._id)
@@ -61,7 +64,7 @@ const ProfilePage = ({ user, setUser }) => {
     const token = localStorage.getItem('token');
     if (!token) return;
     try {
-      const response = await fetch('http://localhost:5174/api/users/current', {
+      const response = await fetch(`${API_URL}/api/users/current`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.ok) {
@@ -87,7 +90,7 @@ const ProfilePage = ({ user, setUser }) => {
       const fetchFollowers = async () => {
         try {
           const token = localStorage.getItem('token');
-          const response = await fetch(`http://localhost:5174/api/users/${user._id}/followers`, {
+          const response = await fetch(`${API_URL}/api/users/${user._id}/followers`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (response.ok) {
@@ -110,7 +113,7 @@ const ProfilePage = ({ user, setUser }) => {
       const fetchFollowing = async () => {
         try {
           const token = localStorage.getItem('token');
-          const response = await fetch(`http://localhost:5174/api/users/${user._id}/following`, {
+          const response = await fetch(`${API_URL}/api/users/${user._id}/following`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (response.ok) {
@@ -145,7 +148,7 @@ const ProfilePage = ({ user, setUser }) => {
   const handleSave = async () => {
     setErrorMessage('');
     try {
-      const response = await fetch('http://localhost:5174/api/auth/updateProfile', {
+      const response = await fetch(`${API_URL}/api/auth/updateProfile`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -176,7 +179,7 @@ const ProfilePage = ({ user, setUser }) => {
 
   const handleDelete = async (postId) => {
     try {
-      const response = await fetch(`http://localhost:5174/api/posts/${postId}`, {
+      const response = await fetch(`${API_URL}/api/posts/${postId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
       });

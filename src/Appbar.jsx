@@ -11,6 +11,7 @@ import {
 import { Brightness4 as Brightness4Icon, Brightness7 as Brightness7Icon } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Appbar({ toggleDarkMode, darkMode }) {
   const [currentUser, setCurrentUser] = useState(null);
@@ -22,7 +23,7 @@ export default function Appbar({ toggleDarkMode, darkMode }) {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No token found");
 
-        const response = await fetch('http://localhost:5174/api/users/current', {
+        const response = await fetch(`${API_URL}/api/users/current`, {
           method: 'GET',
           headers: {
             "Authorization": `Bearer ${token}`,

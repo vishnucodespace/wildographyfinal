@@ -3,6 +3,9 @@ import { Box, Container, Grid, Card, CardContent, Avatar, Typography, TextField,
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
+
+const API_URL = import.meta.env.VITE_API_URL ;
+
 const SearchPeoplePage = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,7 +16,7 @@ const SearchPeoplePage = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://localhost:5174/api/users');
+        const response = await fetch(`${API_URL}/api/users`);
         const data = await response.json();
         console.log("Fetched users:", data); // Check the output here
         setUsers(data);

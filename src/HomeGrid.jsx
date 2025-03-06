@@ -4,6 +4,8 @@ import Masonry from '@mui/lab/Masonry';
 import { Typography, Modal, Container } from '@mui/material';
 import { motion } from 'framer-motion';
 import PostDetailModal from './PostDetailModal';
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 // Animation variants for Masonry items (unchanged)
 const itemVariants = {
@@ -98,7 +100,7 @@ export default function HomeGrid({ currentUser }) {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch('http://localhost:5174/api/posts');
+        const response = await fetch(`${API_URL}/api/posts`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setPosts(Array.isArray(data) ? data : []);

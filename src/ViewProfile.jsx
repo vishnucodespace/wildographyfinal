@@ -15,6 +15,8 @@ import {
 import { motion } from 'framer-motion';
 import PostDetailModal from './PostDetailModal';
 
+const API_URL = import.meta.env.VITE_API_URL ;
+
 // Animation variants for profile header
 const headerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -43,7 +45,7 @@ const ViewProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`http://localhost:5174/api/users/${userId}`);
+        const response = await fetch(`${API_URL}/api/users/${userId}`);
         if (!response.ok) throw new Error(`Error: ${response.status}`);
         const data = await response.json();
         setProfile(data);
@@ -54,7 +56,7 @@ const ViewProfile = () => {
 
     const fetchPosts = async () => {
       try {
-        const response = await fetch(`http://localhost:5174/api/posts`);
+        const response = await fetch(`${API_URL}/api/posts`);
         if (!response.ok) throw new Error(`Error: ${response.status}`);
         const data = await response.json();
         const userPosts = data.filter((post) => String(post.userId) === String(userId));
@@ -86,7 +88,7 @@ const ViewProfile = () => {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:5174/api/users/${userId}/follow-request`, {
+      const response = await fetch(`${API_URL}/api/users/${userId}/follow-request`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -112,7 +114,7 @@ const ViewProfile = () => {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:5174/api/users/${userId}/unfollow`, {
+      const response = await fetch(`${API_URL}/api/users/${userId}/unfollow`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,

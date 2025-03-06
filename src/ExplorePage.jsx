@@ -4,7 +4,7 @@ import Masonry from '@mui/lab/Masonry';
 import { motion } from 'framer-motion';
 import PostDetailModal from './PostDetailModal';
 import { keyframes } from '@mui/system';
-
+const API_URL = import.meta.env.VITE_API_URL;
 // Reusing AnimatedHeading from HomeGrid
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px); }
@@ -111,7 +111,7 @@ const ExplorePage = ({ currentUser }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch('http://localhost:5174/api/posts');
+        const response = await fetch(`${API_URL}/api/posts`);
         const data = await response.json();
         setPosts(data);
       } catch (error) {
