@@ -10,6 +10,7 @@ import {
 import { Brightness4 as Brightness4Icon, Brightness7 as Brightness7Icon } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5174';
 
 export default function Appbar({ toggleDarkMode, darkMode }) {
@@ -42,9 +43,7 @@ export default function Appbar({ toggleDarkMode, darkMode }) {
     fetchCurrentUser();
   }, []);
 
-  const handleProfileClick = () => {
-    navigate('/profile');
-  };
+  const handleProfileClick = () => navigate('/profile');
 
   return (
     <AppBar
@@ -73,43 +72,24 @@ export default function Appbar({ toggleDarkMode, darkMode }) {
         >
           <Box
             component="img"
-            src="/logo.png" // Adjust this path if your logo is hosted elsewhere
+            src="/logo.png"
             alt="WildOgraphy Logo"
             sx={{
               width: '100%',
-              maxWidth: { xs: 180, md: 250 }, // Increased from 150/200 to 180/250
+              maxWidth: { xs: 180, md: 250 },
               height: 'auto',
-              maxHeight: { xs: 56, md: 64 }, // Constrain height to fit within Toolbar minHeight (64/72)
-              objectFit: 'contain', // Ensure the logo scales proportionally without distortion
+              maxHeight: { xs: 56, md: 64 },
+              objectFit: 'contain',
             }}
           />
         </motion.div>
 
-        <Box 
-          sx={{ 
-            display: 'flex', 
-            alignItems: 'center',
-            gap: { xs: 1.5, md: 2.5 },
-          }}
-        >
-          <motion.div
-            whileHover={{ scale: 1.15, rotate: 10 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 400 }}
-          >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, md: 2.5 } }}>
+          <motion.div whileHover={{ scale: 1.15, rotate: 10 }} whileTap={{ scale: 0.95 }} transition={{ type: 'spring', stiffness: 400 }}>
             <Tooltip 
               title="Toggle dark mode" 
               enterDelay={500}
-              componentsProps={{
-                tooltip: {
-                  sx: {
-                    bgcolor: '#1B4D3E',
-                    borderRadius: 2,
-                    fontSize: '0.9rem',
-                    padding: '6px 12px',
-                  }
-                }
-              }}
+              componentsProps={{ tooltip: { sx: { bgcolor: '#1B4D3E', borderRadius: 2, fontSize: '0.9rem', padding: '6px 12px' } } }}
             >
               <IconButton 
                 onClick={toggleDarkMode}
@@ -117,72 +97,41 @@ export default function Appbar({ toggleDarkMode, darkMode }) {
                   color: '#ffffff',
                   bgcolor: 'rgba(255,255,255,0.1)',
                   p: 1,
-                  '&:hover': {
-                    bgcolor: 'rgba(255,255,255,0.2)',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-                  },
+                  '&:hover': { bgcolor: 'rgba(255,255,255,0.2)', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' },
                   transition: 'all 0.2s ease',
                 }}
               >
-                {darkMode ? (
-                  <Brightness7Icon sx={{ fontSize: { xs: 24, md: 28 } }} />
-                ) : (
-                  <Brightness4Icon sx={{ fontSize: { xs: 24, md: 28 } }} />
-                )}
+                {darkMode ? <Brightness7Icon sx={{ fontSize: { xs: 24, md: 28 } }} /> : <Brightness4Icon sx={{ fontSize: { xs: 24, md: 28 } }} />}
               </IconButton>
             </Tooltip>
           </motion.div>
 
           <AnimatePresence>
             {currentUser && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              >
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }}>
                 <Tooltip 
                   title="Profile"
                   enterDelay={500}
-                  componentsProps={{
-                    tooltip: {
-                      sx: {
-                        bgcolor: '#1B4D3E',
-                        borderRadius: 2,
-                        fontSize: '0.9rem',
-                        padding: '6px 12px',
-                      }
-                    }
-                  }}
+                  componentsProps={{ tooltip: { sx: { bgcolor: '#1B4D3E', borderRadius: 2, fontSize: '0.9rem', padding: '6px 12px' } } }}
                 >
                   <IconButton 
                     color="inherit" 
                     onClick={handleProfileClick}
-                    sx={{ 
-                      p: 0,
-                      transition: 'all 0.3s ease',
-                    }}
+                    sx={{ p: 0, transition: 'all 0.3s ease' }}
                   >
                     <Avatar 
-                      src={currentUser.avatar || "https://ui-avatars.com/api/?name=" + encodeURIComponent(currentUser.name)} 
+                      src={currentUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name)}`} 
                       alt={currentUser.name}
                       sx={{
                         width: { xs: 38, md: 44 },
                         height: { xs: 38, md: 44 },
                         border: '2px solid rgba(255,255,255,0.2)',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                        '&:hover': {
-                          borderColor: '#ffffff',
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
-                        },
+                        '&:hover': { borderColor: '#ffffff', boxShadow: '0 4px 12px rgba(0,0,0,0.25)' },
                         transition: 'all 0.2s ease',
                       }}
                       component={motion.div}
-                      whileHover={{ 
-                        scale: 1.1,
-                        rotate: 5,
-                        boxShadow: '0 6px 16px rgba(0,0,0,0.3)'
-                      }}
+                      whileHover={{ scale: 1.1, rotate: 5, boxShadow: '0 6px 16px rgba(0,0,0,0.3)' }}
                       whileTap={{ scale: 0.95 }}
                     />
                   </IconButton>

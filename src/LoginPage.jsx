@@ -45,6 +45,11 @@ const LoginPage = ({ setUser }) => {
   const [signUpPassword, setSignUpPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [borderOpacity, setBorderOpacity] = useState(1);
+  // Add state for validation errors
+  const [loginEmailError, setLoginEmailError] = useState('');
+  const [loginPasswordError, setLoginPasswordError] = useState('');
+  const [signUpEmailError, setSignUpEmailError] = useState('');
+  const [signUpPasswordError, setSignUpPasswordError] = useState('');
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5174';
 
   useEffect(() => {
@@ -59,6 +64,42 @@ const LoginPage = ({ setUser }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Email validation regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // Password validation regex: min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+
+  // Validate email
+  const validateEmail = (email, setError) => {
+    if (!email) {
+      setError('Email is required');
+      return false;
+    }
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address');
+      return false;
+    }
+    setError('');
+    return true;
+  };
+
+  // Validate password
+  const validatePassword = (password, setError) => {
+    if (!password) {
+      setError('Password is required');
+      return false;
+    }
+    if (!passwordRegex.test(password)) {
+      setError(
+        'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character (!@#$%^&*)'
+      );
+      return false;
+    }
+    setError('');
+    return true;
+  };
+
   const handleVideoError = (e) => {
     const error = e.target.error;
     console.error('Video failed to load:', error ? error.message : 'Unknown error');
@@ -71,11 +112,25 @@ const LoginPage = ({ setUser }) => {
   const handleTabChange = (event, newValue) => {
     setTabIndex(newValue);
     setErrorMessage('');
+    // Reset validation errors when switching tabs
+    setLoginEmailError('');
+    setLoginPasswordError('');
+    setSignUpEmailError('');
+    setSignUpPasswordError('');
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMessage('');
+
+    // Validate login form
+    const isEmailValid = validateEmail(loginEmail, setLoginEmailError);
+    const isPasswordValid = validatePassword(loginPassword, setLoginPasswordError);
+
+    if (!isEmailValid || !isPasswordValid) {
+      return; // Prevent form submission if validation fails
+    }
+
     try {
       const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
@@ -99,6 +154,15 @@ const LoginPage = ({ setUser }) => {
   const handleSignUp = async (e) => {
     e.preventDefault();
     setErrorMessage('');
+
+    // Validate sign-up form
+    const isEmailValid = validateEmail(signUpEmail, setSignUpEmailError);
+    const isPasswordValid = validatePassword(signUpPassword, setSignUpPasswordError);
+
+    if (!isEmailValid || !isPasswordValid) {
+      return; // Prevent form submission if validation fails
+    }
+
     try {
       const response = await fetch(`${API_URL}/api/auth/signup`, {
         method: 'POST',
@@ -135,7 +199,12 @@ const LoginPage = ({ setUser }) => {
         variant="outlined"
         required
         value={loginEmail}
-        onChange={(e) => setLoginEmail(e.target.value)}
+        onChange={(e) => {
+          setLoginEmail(e.target.value);
+          validateEmail(e.target.value, setLoginEmailError); // Validate on change
+        }}
+        error={!!loginEmailError}
+        helperText={loginEmailError}
         sx={{
           '& .MuiOutlinedInput-root': {
             backgroundColor: 'rgba(255, 248, 231, 0.9)',
@@ -154,7 +223,12 @@ const LoginPage = ({ setUser }) => {
         variant="outlined"
         required
         value={loginPassword}
-        onChange={(e) => setLoginPassword(e.target.value)}
+        onChange={(e) => {
+          setLoginPassword(e.target.value);
+          validatePassword(e.target.value, setLoginPasswordError); // Validate on change
+        }}
+        error={!!loginPasswordError}
+        helperText={loginPasswordError}
         sx={{
           '& .MuiOutlinedInput-root': {
             backgroundColor: 'rgba(255, 248, 231, 0.9)',
@@ -240,7 +314,12 @@ const LoginPage = ({ setUser }) => {
         variant="outlined"
         required
         value={signUpEmail}
-        onChange={(e) => setSignUpEmail(e.target.value)}
+        onChange={(e) => {
+          setSignUpEmail(e.target.value);
+          validateEmail(e.target.value, setSignUpEmailError); // Validate on change
+        }}
+        error={!!signUpEmailError}
+        helperText={signUpEmailError}
         sx={{
           '& .MuiOutlinedInput-root': {
             backgroundColor: 'rgba(255, 248, 231, 0.9)',
@@ -259,7 +338,12 @@ const LoginPage = ({ setUser }) => {
         variant="outlined"
         required
         value={signUpPassword}
-        onChange={(e) => setSignUpPassword(e.target.value)}
+        onChange={(e) => {
+          setSignUpPassword(e.target.value);
+          validatePassword(e.target.value, setSignUpPasswordError); // Validate on change
+        }}
+        error={!!signUpPasswordError}
+        helperText={signUpPasswordError}
         sx={{
           '& .MuiOutlinedInput-root': {
             backgroundColor: 'rgba(255, 248, 231, 0.9)',
@@ -355,7 +439,7 @@ const LoginPage = ({ setUser }) => {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            px: { xs: 2, md: 4},
+            px: { xs: 2, md: 4 },
             py: 8,
           }}
         >
@@ -366,11 +450,11 @@ const LoginPage = ({ setUser }) => {
           >
             <Box
               component="img"
-              src="/logo.png" // Adjust this path if your logo is hosted elsewhere
+              src="/logo.png"
               alt="Wildography Logo"
               sx={{
                 width: '100%',
-                maxWidth: { xs: 300, md: 450 }, // Increased from 250/350 to 300/400
+                maxWidth: { xs: 300, md: 450 },
                 height: 'auto',
                 mb: 4,
               }}

@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme, keyframes } from '@mui/material/styles';
 import { GlobalStyles } from '@mui/material';
 import LoginPage from './LoginPage';
 import ClippedDrawer from './ClippedDrawer';
 
-// Animation keyframes
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -17,14 +16,13 @@ const float = keyframes`
   100% { transform: translateY(0px); }
 `;
 
-// Enhanced palettes
 const lightPalette = {
   mode: 'light',
   primary: { main: '#2E7D32' },
   secondary: { main: '#E2725B' },
   background: { default: '#F5F0E1', paper: '#FFFFFF' },
   text: { primary: '#424242' },
-  transitions: { hover: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', themeChange: 'background-color 0.5s ease, color 0.3s ease' },
+  transitions: { hover: 'all 0.3s ease', themeChange: 'background-color 0.5s ease, color 0.3s ease' },
 };
 
 const darkPalette = {
@@ -33,7 +31,7 @@ const darkPalette = {
   secondary: { main: '#FF8A65' },
   background: { default: '#121212', paper: '#1E1E1E' },
   text: { primary: '#E0E0E0' },
-  transitions: { hover: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', themeChange: 'background-color 0.5s ease, color 0.3s ease' },
+  transitions: { hover: 'all 0.3s ease', themeChange: 'background-color 0.5s ease, color 0.3s ease' },
 };
 
 const theme = (darkMode) =>
@@ -66,11 +64,7 @@ const theme = (darkMode) =>
         },
       },
     },
-    // Keyframes in theme
-    animations: {
-      fadeIn,
-      float,
-    },
+    animations: { fadeIn, float },
   });
 
 const App = () => {
@@ -89,28 +83,12 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme(darkMode)}>
-      <GlobalStyles
-        styles={{
-          body: {
-            backgroundColor: darkMode ? '#121212' : '#F5F0E1',
-            transition: 'background-color 0.5s ease',
-          },
-        }}
-      />
+      <GlobalStyles styles={{ body: { backgroundColor: darkMode ? '#121212' : '#F5F0E1', transition: 'background-color 0.5s ease' } }} />
       <Routes>
         <Route
           path="/*"
           element={
-            !user ? (
-              <LoginPage setUser={setUser} />
-            ) : (
-              <ClippedDrawer
-                user={user}
-                setUser={setUser}
-                toggleDarkMode={toggleDarkMode}
-                darkMode={darkMode}
-              />
-            )
+            !user ? <LoginPage setUser={setUser} /> : <ClippedDrawer user={user} setUser={setUser} toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
           }
         />
       </Routes>
