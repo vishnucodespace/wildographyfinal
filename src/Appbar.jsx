@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   AppBar,
   Toolbar,
-  Typography,
   IconButton,
   Tooltip,
   Box,
@@ -70,21 +69,20 @@ export default function Appbar({ toggleDarkMode, darkMode }) {
           whileTap={{ scale: 0.98 }}
           transition={{ type: 'spring', stiffness: 400 }}
           style={{ cursor: 'pointer' }}
+          onClick={() => navigate("/")}
         >
-          <Typography
-            variant="h4"
+          <Box
+            component="img"
+            src="/logo.png" // Adjust this path if your logo is hosted elsewhere
+            alt="WildOgraphy Logo"
             sx={{
-              fontFamily: '"Great Vibes", cursive',
-              fontWeight: 600,
-              color: '#ffffff',
-              letterSpacing: '1px',
-              textShadow: '0 2px 8px rgba(0,0,0,0.2)',
-              fontSize: { xs: '2rem', md: '2.5rem' },
+              width: '100%',
+              maxWidth: { xs: 180, md: 250 }, // Increased from 150/200 to 180/250
+              height: 'auto',
+              maxHeight: { xs: 56, md: 64 }, // Constrain height to fit within Toolbar minHeight (64/72)
+              objectFit: 'contain', // Ensure the logo scales proportionally without distortion
             }}
-            onClick={() => navigate("/")}
-          >
-            WildOgraphy
-          </Typography>
+          />
         </motion.div>
 
         <Box 

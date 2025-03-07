@@ -355,7 +355,7 @@ const LoginPage = ({ setUser }) => {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            px: { xs: 2, md: 4 },
+            px: { xs: 2, md: 4},
             py: 8,
           }}
         >
@@ -364,21 +364,17 @@ const LoginPage = ({ setUser }) => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 1, ease: 'easeOut' }}
           >
-            <Typography
-              variant="h3"
+            <Box
+              component="img"
+              src="/logo.png" // Adjust this path if your logo is hosted elsewhere
+              alt="Wildography Logo"
               sx={{
-                background: 'linear-gradient(45deg, #2E7D32, #66BB6A)', // Gradient from forest green to light green
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                fontFamily: '"Playfair Display", serif',
-                fontWeight: 900, // Extra bold
-                letterSpacing: '2px',
+                width: '100%',
+                maxWidth: { xs: 300, md: 450 }, // Increased from 250/350 to 300/400
+                height: 'auto',
                 mb: 4,
-                textAlign: 'center',
               }}
-            >
-              WildOgraphy
-            </Typography>
+            />
           </motion.div>
 
           <motion.div
