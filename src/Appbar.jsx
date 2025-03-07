@@ -11,7 +11,7 @@ import {
 import { Brightness4 as Brightness4Icon, Brightness7 as Brightness7Icon } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5174';
 
 export default function Appbar({ toggleDarkMode, darkMode }) {
   const [currentUser, setCurrentUser] = useState(null);

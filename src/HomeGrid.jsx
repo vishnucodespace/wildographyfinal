@@ -4,7 +4,7 @@ import Masonry from '@mui/lab/Masonry';
 import { Typography, Modal, Container } from '@mui/material';
 import { motion } from 'framer-motion';
 import PostDetailModal from './PostDetailModal';
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5174';
 
 
 // Animation variants for Masonry items (unchanged)

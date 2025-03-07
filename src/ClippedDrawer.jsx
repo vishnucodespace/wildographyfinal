@@ -232,7 +232,7 @@ export default function ClippedDrawer({ user, setUser, toggleDarkMode, darkMode 
           <Route path="/profile" element={<ProfilePage user={user} setUser={setUser} />} />
           <Route path="/searchpeople" element={<SearchPeoplePage />} />
           <Route path="/notifications" element={<Notifications currentUser={user} />} />
-          <Route path="/conservation" element={<ConservationPage />} />
+          <Route path="/conservation" element={<ConservationPage darkMode={darkMode} />} />
           <Route path="/settings" element={<SettingsPage darkMode={darkMode} toggleDarkMode={toggleDarkMode} currentUser={user} />} />
           <Route path="/viewprofile/:userId" element={<ViewProfile />} />
           <Route path="/follow-requests" element={<FollowRequests currentUser={user} />} />

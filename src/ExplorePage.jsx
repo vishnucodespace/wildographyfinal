@@ -4,7 +4,7 @@ import Masonry from '@mui/lab/Masonry';
 import { motion } from 'framer-motion';
 import PostDetailModal from './PostDetailModal';
 import { keyframes } from '@mui/system';
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5174';
 // Reusing AnimatedHeading from HomeGrid
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px); }

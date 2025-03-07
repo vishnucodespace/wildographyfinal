@@ -17,7 +17,7 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { useNavigate } from 'react-router-dom';
 
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL||'http://localhost:5174';
 
 // Animation variants (updated for consistency with HomeGrid/ExplorePage)
 const modalVariants = {

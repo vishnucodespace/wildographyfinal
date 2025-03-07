@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { GlobalStyles, keyframes } from '@mui/material';
+import { ThemeProvider, createTheme, keyframes } from '@mui/material/styles';
+import { GlobalStyles } from '@mui/material';
 import LoginPage from './LoginPage';
 import ClippedDrawer from './ClippedDrawer';
-
 
 // Animation keyframes
 const fadeIn = keyframes`
@@ -18,17 +17,14 @@ const float = keyframes`
   100% { transform: translateY(0px); }
 `;
 
-// Enhanced palettes with transitions
+// Enhanced palettes
 const lightPalette = {
   mode: 'light',
   primary: { main: '#2E7D32' },
   secondary: { main: '#E2725B' },
   background: { default: '#F5F0E1', paper: '#FFFFFF' },
   text: { primary: '#424242' },
-  transitions: {
-    hover: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    themeChange: 'background-color 0.5s ease, color 0.3s ease'
-  },
+  transitions: { hover: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', themeChange: 'background-color 0.5s ease, color 0.3s ease' },
 };
 
 const darkPalette = {
@@ -37,10 +33,7 @@ const darkPalette = {
   secondary: { main: '#FF8A65' },
   background: { default: '#121212', paper: '#1E1E1E' },
   text: { primary: '#E0E0E0' },
-  transitions: {
-    hover: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    themeChange: 'background-color 0.5s ease, color 0.3s ease'
-  },
+  transitions: { hover: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', themeChange: 'background-color 0.5s ease, color 0.3s ease' },
 };
 
 const theme = (darkMode) =>
@@ -57,13 +50,8 @@ const theme = (darkMode) =>
             borderRadius: 6,
             fontWeight: 'bold',
             transition: 'all 0.3s ease',
-            '&:hover': {
-              transform: 'scale(1.05)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-            },
-            '&:active': {
-              transform: 'scale(0.98)'
-            }
+            '&:hover': { transform: 'scale(1.05)', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' },
+            '&:active': { transform: 'scale(0.98)' },
           },
         },
       },
@@ -73,12 +61,15 @@ const theme = (darkMode) =>
             borderRadius: 10,
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
             transition: 'all 0.3s ease',
-            '&:hover': {
-              boxShadow: '0 6px 24px rgba(0, 0, 0, 0.12)'
-            }
+            '&:hover': { boxShadow: '0 6px 24px rgba(0, 0, 0, 0.12)' },
           },
         },
       },
+    },
+    // Keyframes in theme
+    animations: {
+      fadeIn,
+      float,
     },
   });
 
@@ -93,8 +84,7 @@ const App = () => {
 
   const toggleDarkMode = () => {
     setDarkMode((prev) => !prev);
-    document.documentElement.style.transition = 
-      'background-color 0.5s ease, color 0.3s ease';
+    document.documentElement.style.transition = 'background-color 0.5s ease, color 0.3s ease';
   };
 
   return (
@@ -105,8 +95,6 @@ const App = () => {
             backgroundColor: darkMode ? '#121212' : '#F5F0E1',
             transition: 'background-color 0.5s ease',
           },
-          '@keyframes fadeIn': fadeIn,
-          '@keyframes float': float,
         }}
       />
       <Routes>
