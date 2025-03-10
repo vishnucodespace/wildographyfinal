@@ -4,59 +4,66 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-// Signup Route
+router.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`, req.body);
+  next();
+});
+
 router.post("/signup", async (req, res) => {
+  console.log("Entering /signup route");
   const { name, email, password, avatar, username, troop } = req.body;
 
   try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ error: "User already exists" });
+    if (!name || !email || !password || !username) {
+      console.log("Missing required fields:", { name, email, password, username });
+      return res.status(400).json({ error: "Name, email, password, and username are required" });
+    }
+
+    console.log("Signup request:", { name, email, username });
+
+    const existingEmail = await User.findOne({ email });
+    console.log("Existing email check:", existingEmail ? existingEmail : "No match");
+    if (existingEmail) {
+      return res.status(400).json({ error: "This email is already registered" });
+    }
+
+    const existingUsername = await User.findOne({ username });
+    console.log("Existing username check:", existingUsername ? existingUsername : "No match");
+    if (existingUsername) {
+      console.log("Username already exists, blocking signup");
+      return res.status(400).json({ error: "This username is already taken" });
+    }
+
+    const usernameCheck = await User.find({ username });
+    console.log("All matching usernames:", usernameCheck);
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log("Password hashed successfully");
+
     const newUser = new User({ name, email, password: hashedPassword, avatar, username, troop });
-
     await newUser.save();
-    
-    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: "2h" });
+    console.log("New user created:", newUser);
 
-    res.status(201).json({ message: "Account created successfully", token, user: newUser });
+    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "2h",
+    });
+
+    res.status(201).json({
+      message: "Account created successfully",
+      token,
+      user: newUser,
+    });
   } catch (error) {
     console.error("Signup error:", error);
-    res.status(500).json({ error: "Something went wrong, please try again later." });
-  }
-});
-
-// Login Route
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ error: "No account found. Please sign up." });
-
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) return res.status(400).json({ error: "Incorrect email or password" });
-
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "2h" });
-
-    res.json({ token, user });
-  } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ error: "Something went wrong, please try again later." });
-  }
-});
-
-// Update Profile Route
-router.put("/updateProfile", async (req, res) => {
-  const { userId, username, avatar } = req.body;
-
-  try {
-    const updatedUser = await User.findByIdAndUpdate(userId, { username, avatar }, { new: true });
-    if (!updatedUser) return res.status(404).json({ error: "User not found" });
-
-    res.json({ message: "Profile updated successfully", user: updatedUser });
-  } catch (error) {
-    console.error("Profile update error:", error);
+    if (error.code === 11000) {
+      console.log("Duplicate key error detected:", error.keyPattern);
+      if (error.keyPattern.email) {
+        return res.status(400).json({ error: "This email is already registered" });
+      }
+      if (error.keyPattern.username) {
+        return res.status(400).json({ error: "This username is already taken" });
+      }
+    }
     res.status(500).json({ error: "Something went wrong, please try again later." });
   }
 });

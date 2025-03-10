@@ -11,8 +11,9 @@ import {
   MenuItem,
 } from '@mui/material';
 import { motion } from 'framer-motion';
+import Swal from 'sweetalert2';
 
-const API_URL = import.meta.env.VITE_API_URL||'http://localhost:5174' ;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5174';
 
 // Animation variants
 const containerVariants = {
@@ -68,7 +69,20 @@ const UploadPostPage = ({ user }) => {
     const userId = loggedUser?._id || loggedUser?.id;
     console.log('Logged in user:', loggedUser);
     if (!userId) {
-      alert('Please log in to upload a post.');
+      Swal.fire({
+        title: 'Oops!',
+        text: 'Please log in.',
+        icon: 'warning',
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        position: 'top', // Pop in from the top
+        width: '250px', // Smaller width
+        padding: '0.75rem', // Compact padding
+        customClass: {
+          popup: 'swal2-rectangular-popup', // Custom class for rectangular shape
+        },
+      });
       return;
     }
     if (!imgUrl) {
@@ -92,7 +106,20 @@ const UploadPostPage = ({ user }) => {
       const data = await response.json();
       console.log('Response from server:', data);
       if (response.ok) {
-        alert('Post Uploaded!');
+        Swal.fire({
+          title: 'Success!',
+          text: 'Post Uploaded!',
+          icon: 'success',
+          timer: 2000,
+          timerProgressBar: true,
+          showConfirmButton: false,
+          position: 'top', // Pop in from the top
+          width: '250px', // Smaller width
+          padding: '0.75rem', // Compact padding
+          customClass: {
+            popup: 'swal2-rectangular-popup', // Custom class for rectangular shape
+          },
+        });
         setImgUrl('');
         setPreview('');
         setCaption('');

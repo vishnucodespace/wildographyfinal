@@ -1,4 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+.swal2-rectangular-popup {
+  border-radius: 0 !important; /* Remove rounded corners for a rectangular shape */
+  font-size: 0.9rem; /* Slightly smaller text */
+}
+
+.swal2-rectangular-popup .swal2-title {
+  font-size: 1.1rem; /* Smaller title */
+  margin: 0.5rem 0; /* Tighten spacing */
+}
+
+.swal2-rectangular-popup .swal2-html-container {
+  font-size: 0.8rem; /* Smaller text content */
+  margin: 0.5rem 0; /* Tighten spacing */
+}
+
+.swal2-rectangular-popup .swal2-timer-progress-bar {
+  height: 0.2rem; /* Thinner progress bar */
+}
 
 @keyframes float {
   0% { transform: translateY(0px); }

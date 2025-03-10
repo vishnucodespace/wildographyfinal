@@ -45,11 +45,12 @@ const LoginPage = ({ setUser }) => {
   const [signUpPassword, setSignUpPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [borderOpacity, setBorderOpacity] = useState(1);
-  // Add state for validation errors
+  // Validation errors
   const [loginEmailError, setLoginEmailError] = useState('');
   const [loginPasswordError, setLoginPasswordError] = useState('');
   const [signUpEmailError, setSignUpEmailError] = useState('');
   const [signUpPasswordError, setSignUpPasswordError] = useState('');
+  const [signUpUsernameError, setSignUpUsernameError] = useState('');
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5174';
 
   useEffect(() => {
@@ -69,6 +70,9 @@ const LoginPage = ({ setUser }) => {
 
   // Password validation regex: min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+
+  // Username validation regex: 3-20 chars, alphanumeric and underscores only
+  const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
 
   // Validate email
   const validateEmail = (email, setError) => {
@@ -100,6 +104,20 @@ const LoginPage = ({ setUser }) => {
     return true;
   };
 
+  // Validate username format
+  const validateUsernameFormat = (username, setError) => {
+    if (!username) {
+      setError('Username is required');
+      return false;
+    }
+    if (!usernameRegex.test(username)) {
+      setError('Username must be 3-20 characters long and contain only letters, numbers, or underscores');
+      return false;
+    }
+    setError('');
+    return true;
+  };
+
   const handleVideoError = (e) => {
     const error = e.target.error;
     console.error('Video failed to load:', error ? error.message : 'Unknown error');
@@ -112,25 +130,25 @@ const LoginPage = ({ setUser }) => {
   const handleTabChange = (event, newValue) => {
     setTabIndex(newValue);
     setErrorMessage('');
-    // Reset validation errors when switching tabs
     setLoginEmailError('');
     setLoginPasswordError('');
     setSignUpEmailError('');
     setSignUpPasswordError('');
+    setSignUpUsernameError('');
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMessage('');
 
-    // Validate login form
     const isEmailValid = validateEmail(loginEmail, setLoginEmailError);
     const isPasswordValid = validatePassword(loginPassword, setLoginPasswordError);
 
     if (!isEmailValid || !isPasswordValid) {
-      return; // Prevent form submission if validation fails
+      return;
     }
 
+    console.log("Login request:", { email: loginEmail }); // Debug login
     try {
       const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
@@ -138,6 +156,7 @@ const LoginPage = ({ setUser }) => {
         body: JSON.stringify({ email: loginEmail, password: loginPassword }),
       });
       const data = await response.json();
+      console.log("Login response:", data); // Debug response
       if (response.ok) {
         localStorage.setItem('token', data.token);
         setUser(data.user);
@@ -155,13 +174,23 @@ const LoginPage = ({ setUser }) => {
     e.preventDefault();
     setErrorMessage('');
 
-    // Validate sign-up form
     const isEmailValid = validateEmail(signUpEmail, setSignUpEmailError);
     const isPasswordValid = validatePassword(signUpPassword, setSignUpPasswordError);
+    const isUsernameValid = validateUsernameFormat(signUpUsername, setSignUpUsernameError);
 
-    if (!isEmailValid || !isPasswordValid) {
-      return; // Prevent form submission if validation fails
+    if (!isEmailValid || !isPasswordValid || !isUsernameValid) {
+      return;
     }
+
+    console.log("API_URL:", API_URL); // Debug URL
+    console.log("Signup request:", {
+      name: signUpName,
+      username: signUpUsername,
+      troop: signUpTroop,
+      email: signUpEmail,
+      password: signUpPassword,
+      avatar: '',
+    }); // Debug payload
 
     try {
       const response = await fetch(`${API_URL}/api/auth/signup`, {
@@ -177,6 +206,7 @@ const LoginPage = ({ setUser }) => {
         }),
       });
       const data = await response.json();
+      console.log("Signup response:", data); // Debug response
       if (response.ok) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
@@ -190,6 +220,7 @@ const LoginPage = ({ setUser }) => {
     }
   };
 
+  // Rest of your JSX (loginForm, signUpForm, etc.) remains unchanged
   const loginForm = (
     <Box component="form" onSubmit={handleLogin} sx={{ mt: 2 }}>
       <TextField
@@ -201,7 +232,7 @@ const LoginPage = ({ setUser }) => {
         value={loginEmail}
         onChange={(e) => {
           setLoginEmail(e.target.value);
-          validateEmail(e.target.value, setLoginEmailError); // Validate on change
+          validateEmail(e.target.value, setLoginEmailError);
         }}
         error={!!loginEmailError}
         helperText={loginEmailError}
@@ -225,7 +256,7 @@ const LoginPage = ({ setUser }) => {
         value={loginPassword}
         onChange={(e) => {
           setLoginPassword(e.target.value);
-          validatePassword(e.target.value, setLoginPasswordError); // Validate on change
+          validatePassword(e.target.value, setLoginPasswordError);
         }}
         error={!!loginPasswordError}
         helperText={loginPasswordError}
@@ -277,7 +308,12 @@ const LoginPage = ({ setUser }) => {
         variant="outlined"
         required
         value={signUpUsername}
-        onChange={(e) => setSignUpUsername(e.target.value)}
+        onChange={(e) => {
+          setSignUpUsername(e.target.value);
+          validateUsernameFormat(e.target.value, setSignUpUsernameError);
+        }}
+        error={!!signUpUsernameError}
+        helperText={signUpUsernameError}
         sx={{
           '& .MuiOutlinedInput-root': {
             backgroundColor: 'rgba(255, 248, 231, 0.9)',
@@ -316,7 +352,7 @@ const LoginPage = ({ setUser }) => {
         value={signUpEmail}
         onChange={(e) => {
           setSignUpEmail(e.target.value);
-          validateEmail(e.target.value, setSignUpEmailError); // Validate on change
+          validateEmail(e.target.value, setSignUpEmailError);
         }}
         error={!!signUpEmailError}
         helperText={signUpEmailError}
@@ -340,7 +376,7 @@ const LoginPage = ({ setUser }) => {
         value={signUpPassword}
         onChange={(e) => {
           setSignUpPassword(e.target.value);
-          validatePassword(e.target.value, setSignUpPasswordError); // Validate on change
+          validatePassword(e.target.value, setSignUpPasswordError);
         }}
         error={!!signUpPasswordError}
         helperText={signUpPasswordError}

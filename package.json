@@ -26,6 +26,7 @@
     "react-slick": "^0.30.3",
     "react-typed": "^2.0.12",
     "slick-carousel": "^1.8.1",
+    "sweetalert2": "^11.17.2",
     "typed.js": "^2.1.0"
   },
   "devDependencies": {

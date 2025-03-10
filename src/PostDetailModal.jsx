@@ -16,10 +16,9 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5174';
 
-const API_URL = import.meta.env.VITE_API_URL||'http://localhost:5174';
-
-// Animation variants (updated for consistency with HomeGrid/ExplorePage)
+// Animation variants
 const modalVariants = {
   hidden: { opacity: 0, scale: 0.95, y: 50 },
   visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.4, ease: 'easeInOut' } },
@@ -38,20 +37,59 @@ const fullScreenVariants = {
   exit: { opacity: 0, scale: 0.8, transition: { duration: 0.3 } },
 };
 
+// Function to format time difference (e.g., "1d", "1h", "1min ago")
+const formatTimeAgo = (timestamp) => {
+  const now = new Date();
+  const commentTime = new Date(timestamp);
+  const diffInSeconds = Math.floor((now - commentTime) / 1000);
+
+  if (diffInSeconds < 60) return `${diffInSeconds}s ago`; // Seconds
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}min ago`; // Minutes
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`; // Hours
+  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)}d ago`; // Days
+  return commentTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); // Full date for older comments
+};
+
 const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
   const [localPost, setLocalPost] = useState(post);
   const [commentText, setCommentText] = useState('');
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [fetchedCurrentUser, setFetchedCurrentUser] = useState(null); // New state for fetched user
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  // Fetch current user if not provided
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      if (!token) return;
+      try {
+        const response = await fetch(`${API_URL}/api/users/current`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          setFetchedCurrentUser(userData);
+        } else {
+          console.error('Failed to fetch current user');
+        }
+      } catch (error) {
+        console.error('Error fetching current user:', error);
+      }
+    };
+
+    if (!currentUser && token) {
+      fetchCurrentUser();
+    }
+  }, [currentUser, token]);
+
+  // Use provided currentUser or fetched user
+  const effectiveCurrentUser = currentUser || fetchedCurrentUser;
+  const commenterName = effectiveCurrentUser?.username || effectiveCurrentUser?.name || "Anonymous";
 
   useEffect(() => {
     setLocalPost(post);
-    console.log("PostDetailModal rendered with post:", post); // Debug to verify props
-    console.log("Modal container zIndex check:", document.querySelector('.MuiModal-root')?.style.zIndex); // Debug zIndex
+    console.log("PostDetailModal rendered with post:", post);
   }, [post]);
-
-  const commenterName = currentUser?.username || currentUser?.name || "Anonymous";
-  const token = localStorage.getItem("token");
 
   const handleLike = async () => {
     try {
@@ -79,7 +117,7 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ user: commenterName, text: commentText }),
+        body: JSON.stringify({ user: commenterName, text: commentText, createdAt: new Date().toISOString() }),
       });
       const data = await response.json();
       if (response.ok) {
@@ -105,7 +143,7 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
     : "Date not available";
 
   const handleProfileClick = () => {
-    navigate(`/viewprofile/${localPost.userId}`, { state: { currentUser } });
+    navigate(`/viewprofile/${localPost.userId}`, { state: { currentUser: effectiveCurrentUser } });
   };
 
   const handleImageClick = () => {
@@ -126,13 +164,13 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backdropFilter: 'none', // Removed blur for a clean backdrop
-          backgroundColor: 'rgba(0, 0, 0, 0.5)', // Subtle semi-transparent backdrop
+          backdropFilter: 'none',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
           border: 'none',
           outline: 'none',
-          boxShadow: 'none', // Remove any shadow that might mimic a container
-          '&:focus': { outline: 'none', border: 'none' }, // Prevent focus outlines/borders
-          zIndex: 1300, // Ensure modal is above background content
+          boxShadow: 'none',
+          '&:focus': { outline: 'none', border: 'none' },
+          zIndex: 1300,
         }}
       >
         <motion.div
@@ -140,26 +178,26 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
           initial="hidden"
           animate="visible"
           exit="exit"
-          style={{ position: 'relative', zIndex: 1301 }} // Ensure content is above backdrop
+          style={{ position: 'relative', zIndex: 1301 }}
         >
           <Box
             sx={{
               width: { xs: '95%', md: '85%' },
               maxWidth: 1200,
               bgcolor: 'background.paper',
-              borderRadius: 0, // Removed rounded borders as requested
+              borderRadius: 0,
               overflow: 'hidden',
               display: 'flex',
               flexDirection: { xs: 'column', md: 'row' },
               maxHeight: '90vh',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.12)', // Reduced shadow for a cleaner look
+              boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
               border: 'none',
               outline: 'none',
-              '&:focus': { outline: 'none', border: 'none' }, // Prevent focus outlines/borders
-              zIndex: 1302, // Ensure Box is above motion div
-              transition: 'all 0.3s ease-in-out', // Smooth transitions for Pexels-like feel
+              '&:focus': { outline: 'none', border: 'none' },
+              zIndex: 1302,
+              transition: 'all 0.3s ease-in-out',
               '&:hover': {
-                boxShadow: '0 6px 20px rgba(0,0,0,0.15)', // Subtle hover shadow
+                boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
               },
             }}
           >
@@ -170,35 +208,35 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                 position: 'absolute',
                 top: 16,
                 right: 16,
-                color: '#2c3e50', // Consistent with HomeGrid/ExplorePage
-                '&:hover': { color: '#27ae60', transform: 'scale(1.1)', bgcolor: 'rgba(255,255,255,0.9)' }, // Smooth hover with slight background
-                zIndex: 1303, // Highest zIndex to ensure visibility
+                color: '#2c3e50',
+                '&:hover': { color: '#27ae60', transform: 'scale(1.1)', bgcolor: 'rgba(255,255,255,0.9)' },
+                zIndex: 1303,
                 border: 'none',
                 outline: 'none',
-                '&:focus': { outline: 'none', border: 'none' }, // Prevent focus outlines/borders
-                borderRadius: 0, // Removed rounded border for consistency
-                p: 1, // Padding for a larger hit area
+                '&:focus': { outline: 'none', border: 'none' },
+                borderRadius: 0,
+                p: 1,
               }}
             >
               <CloseIcon />
             </IconButton>
 
-            {/* Media Section (Adjusted Alignment) */}
+            {/* Media Section */}
             <Box
               sx={{
                 flex: { xs: 'none', md: 1.5 },
                 display: 'flex',
-                justifyContent: 'center', // Centered alignment for better presentation
+                justifyContent: 'center',
                 alignItems: 'center',
                 overflow: 'hidden',
                 cursor: 'pointer',
                 border: 'none',
                 outline: 'none',
-                '&:focus': { outline: 'none', border: 'none' }, // Prevent focus outlines/borders
-                zIndex: 1300, // Keep it below the cancel button
+                '&:focus': { outline: 'none', border: 'none' },
+                zIndex: 1300,
                 transition: 'all 0.3s ease-in-out',
                 '&:hover': {
-                  transform: 'scale(1.02)', // Slight scale on hover for interactivity
+                  transform: 'scale(1.02)',
                 },
               }}
               onClick={handleImageClick}
@@ -211,13 +249,13 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                   width: '100%',
                   height: '100%',
                   maxHeight: { xs: '50vh', md: '70vh' },
-                  objectFit: 'contain', // Flexible scaling, centered for better alignment
+                  objectFit: 'contain',
                   border: 'none',
                   outline: 'none',
-                  '&:focus': { outline: 'none', border: 'none' }, // Prevent focus outlines/borders
+                  '&:focus': { outline: 'none', border: 'none' },
                   transition: 'transform 0.3s ease-in-out',
                   '&:hover': {
-                    transform: 'scale(1.02)', // Slight scale on hover for Pexels-like interactivity
+                    transform: 'scale(1.02)',
                   },
                 }}
               />
@@ -234,10 +272,10 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                 bgcolor: 'background.paper',
                 border: 'none',
                 outline: 'none',
-                '&:focus': { outline: 'none', border: 'none' }, // Prevent focus outlines/borders
-                zIndex: 1300, // Keep it below the cancel button
-                borderRadius: 0, // Removed rounded borders as requested
-                boxShadow: 'inset 0 1px 4px rgba(0,0,0,0.05)', // Subtle inner shadow for depth
+                '&:focus': { outline: 'none', border: 'none' },
+                zIndex: 1300,
+                borderRadius: 0,
+                boxShadow: 'inset 0 1px 4px rgba(0,0,0,0.05)',
                 transition: 'all 0.3s ease-in-out',
               }}
             >
@@ -247,10 +285,10 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                     src={posterAvatar}
                     alt={posterUsername}
                     sx={{
-                      width: 48, // Larger for prominence
+                      width: 48,
                       height: 48,
                       mr: 2,
-                      border: '2px solid #27ae60', // Green border for HomeGrid consistency
+                      border: '2px solid #27ae60',
                       transition: 'all 0.3s ease-in-out',
                       '&:hover': {
                         transform: 'scale(1.1)',
@@ -402,14 +440,12 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                         <Box
                           sx={{
                             mb: 2,
-                            p: 2,
-                            bgcolor: '#ffffff',
-                            borderRadius: 8,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                            border: '1px solid #e9ecef',
+                            p: 1.5,
+                            bgcolor: '#f9fafb', // Light background for a modern look
+                            borderRadius: 2, // Slightly rounded corners
                             transition: 'all 0.3s ease-in-out',
                             '&:hover': {
-                              boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                              bgcolor: '#f1f5f9', // Slightly darker on hover
                               transform: 'translateY(-2px)',
                             },
                           }}
@@ -419,41 +455,56 @@ const PostDetailModal = ({ post, onClose, onPostUpdated, currentUser }) => {
                               src={comment.userAvatar || "https://via.placeholder.com/32"}
                               alt={comment.user}
                               sx={{
-                                width: 32,
-                                height: 32,
-                                mr: 1,
-                                border: '1px solid #27ae60',
+                                width: 28, // Smaller avatar for a cleaner look
+                                height: 28,
+                                mr: 1.5,
+                                border: '1px solid #e0e0e0', // Subtle border
                                 transition: 'all 0.3s ease-in-out',
                                 '&:hover': {
                                   transform: 'scale(1.1)',
-                                  boxShadow: '0 2px 8px rgba(39, 174, 96, 0.2)',
+                                  borderColor: '#27ae60',
                                 },
                               }}
                             />
-                            <Typography
-                              variant="subtitle1"
-                              sx={{
-                                fontFamily: '"Roboto", sans-serif',
-                                fontWeight: 500,
-                                color: '#2c3e50',
-                                transition: 'color 0.3s ease',
-                                '&:hover': { color: '#27ae60' },
-                              }}
-                            >
-                              {comment.user}
-                            </Typography>
+                            <Box sx={{ flex: 1 }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Typography
+                                  variant="subtitle2"
+                                  sx={{
+                                    fontFamily: '"Roboto", sans-serif',
+                                    fontWeight: 500,
+                                    color: '#2c3e50',
+                                    transition: 'color 0.3s ease',
+                                    '&:hover': { color: '#27ae60' },
+                                  }}
+                                >
+                                  {comment.user}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  sx={{
+                                    fontFamily: '"Roboto", sans-serif',
+                                    color: '#9ca3af', // Muted color for timestamp
+                                    fontSize: '0.75rem',
+                                  }}
+                                >
+                                  {comment.createdAt ? formatTimeAgo(comment.createdAt) : 'Just now'}
+                                </Typography>
+                              </Box>
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  fontFamily: '"Roboto", sans-serif',
+                                  color: '#4b5563',
+                                  lineHeight: 1.5, // Fixed overlapping issue
+                                  wordBreak: 'break-word',
+                                  mt: 0.5,
+                                }}
+                              >
+                                {comment.text}
+                              </Typography>
+                            </Box>
                           </Box>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              fontFamily: '"Roboto", sans-serif',
-                              color: '#666666',
-                              lineHeight: 0.2,
-                              wordBreak: 'break-word',
-                            }}
-                          >
-                            {comment.text}
-                          </Typography>
                         </Box>
                       </motion.div>
                     ))
