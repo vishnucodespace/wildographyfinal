@@ -52,6 +52,7 @@ const LoginPage = ({ setUser }) => {
   const [signUpPasswordError, setSignUpPasswordError] = useState('');
   const [signUpUsernameError, setSignUpUsernameError] = useState('');
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5174';
+  console.log('API_URL being used:', API_URL); 
 
   useEffect(() => {
     const handleScroll = () => {
