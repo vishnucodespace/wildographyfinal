@@ -96,7 +96,7 @@ const ExplorePage = ({ currentUser }) => {
             onError={(e) => console.error('Video failed to load:', e)} // Log errors if video fails
           >
             <source
-              src="https://videos.pexels.com/video-files/2474636/2474636-sd_640_360_30fps.mp4" // Reliable Pexels video
+              src="https://videos.pexels.com/video-files/6318569/6318569-sd_960_506_25fps.mp4" // Reliable Pexels video
               type="video/mp4"
             />
             Your browser does not support the video tag.
